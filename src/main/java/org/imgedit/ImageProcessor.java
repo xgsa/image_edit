@@ -6,8 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class ImageProcessor
-{
+public class ImageProcessor {
 
     private String getImageFormatStr(String imageFileName) {
         if (imageFileName.toLowerCase().endsWith("png")) {
@@ -37,9 +36,8 @@ public class ImageProcessor
         return bufImage;
     }
 
-    public void processImage(File imageFile)
-    {
-        System.out.println( "Process image: " + imageFile.getName() );
+    public void processImage(File imageFile) {
+        System.out.println("Process image: " + imageFile.getName());
         try {
             BufferedImage inImage = ImageIO.read(imageFile);
             int newWidth = getImageNewWidth(inImage);
@@ -47,8 +45,8 @@ public class ImageProcessor
             Image outImage = inImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
             File outFile = new File(getNewImageFileName(imageFile));
             ImageIO.write(toBufferedImage(outImage), getImageFormatStr(imageFile.getName()), outFile);
-        } catch (IOException e){
-            System.out.println( "  => Error during processing image: " + e.getMessage() );
+        } catch (IOException e) {
+            System.out.println("  => Error during processing image: " + e.getMessage());
         }
     }
 
