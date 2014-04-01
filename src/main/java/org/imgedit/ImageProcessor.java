@@ -1,5 +1,7 @@
 package org.imgedit;
 
+import org.apache.log4j.Logger;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -7,6 +9,13 @@ import java.io.File;
 import java.io.IOException;
 
 public class ImageProcessor {
+
+    private Logger logger;
+
+
+    public ImageProcessor(Logger logger) {
+        this.logger = logger;
+    }
 
     private String getImageFormatStr(String imageFileName) {
         if (imageFileName.toLowerCase().endsWith("png")) {
@@ -37,16 +46,17 @@ public class ImageProcessor {
     }
 
     public void processImage(File imageFile) {
-        System.out.println("Process image: " + imageFile.getName());
+        String imageFileName = imageFile.getName();
+        logger.info(String.format("Processing image '%s'...", imageFileName));
         try {
             BufferedImage inImage = ImageIO.read(imageFile);
             int newWidth = getImageNewWidth(inImage);
             int newHeight = getImageNewHeight(inImage);
             Image outImage = inImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
             File outFile = new File(getNewImageFileName(imageFile));
-            ImageIO.write(toBufferedImage(outImage), getImageFormatStr(imageFile.getName()), outFile);
+            ImageIO.write(toBufferedImage(outImage), getImageFormatStr(imageFileName), outFile);
         } catch (IOException e) {
-            System.out.println("  => Error during processing image: " + e.getMessage());
+            logger.error(String.format("Error during processing image '%s': %s", imageFileName, e.getMessage()));
         }
     }
 
