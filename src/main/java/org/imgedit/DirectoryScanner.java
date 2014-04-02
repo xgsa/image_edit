@@ -8,6 +8,11 @@ public class DirectoryScanner {
     private String directoryPath;
 
 
+    public static interface FileListener {
+        public void onFile(File file);
+    }
+
+
     private static class ImageFilenameFilter implements FilenameFilter {
         @Override
         public boolean accept(File dir, String name) {
@@ -23,11 +28,11 @@ public class DirectoryScanner {
         this.directoryPath = directoryPath;
     }
 
-    public void scan(ImageProcessor imageProcessor) throws Exception {
+    public void scan(FileListener fileListener) throws Exception {
         File imagesDirectory = new File(directoryPath);
         if (imagesDirectory.exists() && imagesDirectory.isDirectory()) {
             for (File imageFile : imagesDirectory.listFiles(imageFilenameFilter)) {
-                imageProcessor.processImage(imageFile);
+                fileListener.onFile(imageFile);
             }
         } else {
             // Yep, more specific exception should be thrown here

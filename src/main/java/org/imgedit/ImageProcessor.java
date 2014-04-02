@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class ImageProcessor {
+public class ImageProcessor implements DirectoryScanner.FileListener {
 
     private Logger logger;
 
@@ -45,7 +45,8 @@ public class ImageProcessor {
         return bufImage;
     }
 
-    public void processImage(File imageFile) {
+    @Override
+    public void onFile(File imageFile) {
         String imageFileName = imageFile.getName();
         logger.info(String.format("Processing image '%s'...", imageFileName));
         try {
@@ -59,5 +60,4 @@ public class ImageProcessor {
             logger.error(String.format("Error during processing image '%s': %s", imageFileName, e.getMessage()));
         }
     }
-
 }
