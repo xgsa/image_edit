@@ -7,12 +7,12 @@ import java.io.*;
 
 public class ImageFileProcessor implements DirectoryScanner.FileListener {
 
-    private final Logger logger;
+    private static final Logger LOG = Logger.getLogger(ImageFileProcessor.class);
+
     private final ImageStreamProcessor imageStreamProcessor;
 
 
-    public ImageFileProcessor(Logger logger, ImageStreamProcessor imageStreamProcessor) {
-        this.logger = logger;
+    public ImageFileProcessor(ImageStreamProcessor imageStreamProcessor) {
         this.imageStreamProcessor = imageStreamProcessor;
     }
 
@@ -31,7 +31,7 @@ public class ImageFileProcessor implements DirectoryScanner.FileListener {
     @Override
     public void onFile(File imageFile) {
         String imageFileName = imageFile.getName();
-        logger.info(String.format("Processing image '%s'...", imageFileName));
+        LOG.info(String.format("Processing image '%s'...", imageFileName));
         InputStream inImageStream = null;
         OutputStream outImageStream = null;
         try {
@@ -39,7 +39,7 @@ public class ImageFileProcessor implements DirectoryScanner.FileListener {
             outImageStream = new FileOutputStream(getNewImageFileName(imageFile));
             imageStreamProcessor.processImage(inImageStream, outImageStream, getImageFormatStr(imageFileName));
         } catch (IOException e) {
-            logger.error(String.format("Error during processing image '%s': %s", imageFileName, e.getMessage()));
+            LOG.error(String.format("Error during processing image '%s': %s", imageFileName, e.getMessage()));
         } finally {
             IOUtils.closeQuietly(inImageStream);
             IOUtils.closeQuietly(outImageStream);

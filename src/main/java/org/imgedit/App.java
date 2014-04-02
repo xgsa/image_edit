@@ -19,10 +19,8 @@ public class App {
     private static final int THREADS_IN_POOL = Runtime.getRuntime().availableProcessors();
     private static final int TIMEOUT_VALUE = 1;
 
+    private static final Logger LOG = Logger.getLogger(App.class);
 
-    private static Logger getLogger() {
-        return Logger.getLogger(App.class);
-    }
 
     private static void configureLogging() {
         File logProperties = new File(LOG_PROPERTIES_FILENAME);
@@ -34,28 +32,27 @@ public class App {
             BasicConfigurator.configure();
             logSourceStr = "by default";
         }
-        getLogger().info(String.format("Hi! The application was started, logging was configured %s!", logSourceStr));
+        LOG.info(String.format("Hi! The application was started, logging was configured %s!", logSourceStr));
     }
 
     private static void processDirectory(String directoryPath) {
         try {
             DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath, IMAGE_EXTENSIONS);
             ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(WIDTH_RATIO, HEIGHT_RATIO);
-            Logger imageFileProcessorLog = Logger.getLogger(ImageFileProcessor.class);
-            ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageFileProcessorLog, imageStreamProcessor);
-            getLogger().info(String.format("Run in parallel mode (with %s threads).", THREADS_IN_POOL));
+            ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageStreamProcessor);
+            LOG.info(String.format("Run in parallel mode (with %s threads).", THREADS_IN_POOL));
             ExecutorService executorService = Executors.newFixedThreadPool(THREADS_IN_POOL);
             ParallelFileProcessor parallelFileProcessor = new ParallelFileProcessor(executorService, imageFileProcessor);
             directoryScanner.scan(parallelFileProcessor);
             executorService.shutdown();
             boolean terminatedOk = executorService.awaitTermination(TIMEOUT_VALUE, TimeUnit.HOURS);
             if (!terminatedOk) {
-                getLogger().error("Execution of parallel subtasks was terminated by timeout.");
+                LOG.error("Execution of parallel subtasks was terminated by timeout.");
             } else {
-                getLogger().info("Done.");
+                LOG.info("Done.");
             }
         } catch (Exception e) {
-            getLogger().error(String.format("Error: %s.", e.getMessage()));
+            LOG.error(String.format("Error: %s.", e.getMessage()));
         }
     }
 
@@ -64,7 +61,7 @@ public class App {
         if (args.length >= 1) {
             processDirectory(args[0]);
         } else {
-            getLogger().error("Error: Please specify the directory with images to scan.");
+            LOG.error("Error: Please specify the directory with images to scan.");
         }
     }
 }
