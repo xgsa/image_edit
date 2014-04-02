@@ -9,6 +9,8 @@ import java.io.File;
 public class App {
 
     private static final String logPropertiesFilename = "log4j.properties";
+    private static final int widthRatio = 2;
+    private static final int heightRatio = 2;
 
 
     private static Logger getLogger() {
@@ -31,8 +33,10 @@ public class App {
     private static void processDirectory(String directoryPath) {
         try {
             DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath);
-            ImageProcessor imageProcessor = new ImageProcessor(Logger.getLogger(ImageProcessor.class));
-            directoryScanner.scan(imageProcessor);
+            ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(widthRatio, heightRatio);
+            Logger imageFileProcessorLog = Logger.getLogger(ImageFileProcessor.class);
+            ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageFileProcessorLog, imageStreamProcessor);
+            directoryScanner.scan(imageFileProcessor);
         } catch (Exception e) {
             getLogger().error(String.format("Error: %s.", e.getMessage()));
         }
