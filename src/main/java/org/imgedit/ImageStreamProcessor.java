@@ -9,7 +9,7 @@ import java.io.OutputStream;
 
 public class ImageStreamProcessor {
 
-    private int widthRatio, heightRatio;
+    private final int widthRatio, heightRatio;
 
 
     public ImageStreamProcessor(int widthRatio, int heightRatio) {

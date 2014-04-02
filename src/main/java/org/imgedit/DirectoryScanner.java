@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 public class DirectoryScanner {
-    private String directoryPath;
+    private final String directoryPath;
     private final String[] extensions;
 
 

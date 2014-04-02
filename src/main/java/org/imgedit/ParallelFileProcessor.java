@@ -5,8 +5,8 @@ import java.util.concurrent.ExecutorService;
 
 public class ParallelFileProcessor implements DirectoryScanner.FileListener {
 
-    private ExecutorService executorService;
-    private DirectoryScanner.FileListener clientListener;
+    private final ExecutorService executorService;
+    private final DirectoryScanner.FileListener clientListener;
 
 
     public ParallelFileProcessor(ExecutorService executorService, DirectoryScanner.FileListener clientListener) {

@@ -7,8 +7,8 @@ import java.io.*;
 
 public class ImageFileProcessor implements DirectoryScanner.FileListener {
 
-    private Logger logger;
-    private ImageStreamProcessor imageStreamProcessor;
+    private final Logger logger;
+    private final ImageStreamProcessor imageStreamProcessor;
 
 
     public ImageFileProcessor(Logger logger, ImageStreamProcessor imageStreamProcessor) {

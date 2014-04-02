@@ -11,24 +11,25 @@ import java.util.concurrent.TimeUnit;
 
 public class App {
 
-    private static final String logPropertiesFilename = "log4j.properties";
-    private static final int widthRatio = 2;
-    private static final int heightRatio = 2;
-    private static final String[] imageExtensions = new String[]{"jpg", "png"};
+    private static final String LOG_PROPERTIES_FILENAME = "log4j.properties";
+    private static final int WIDTH_RATIO = 2;
+    private static final int HEIGHT_RATIO = 2;
+    private static final String[] IMAGE_EXTENSIONS = new String[]{"jpg", "png"};
 
-    private static final int threadsInPool = Runtime.getRuntime().availableProcessors();
-    private static final int timeoutValue = 1;
+    private static final int THREADS_IN_POOL = Runtime.getRuntime().availableProcessors();
+    private static final int TIMEOUT_VALUE = 1;
+
 
     private static Logger getLogger() {
         return Logger.getLogger(App.class);
     }
 
     private static void configureLogging() {
-        File logProperties = new File(logPropertiesFilename);
+        File logProperties = new File(LOG_PROPERTIES_FILENAME);
         String logSourceStr;
         if (logProperties.exists()) {
-            PropertyConfigurator.configure(logPropertiesFilename);
-            logSourceStr = String.format("from the '%s' file", logPropertiesFilename);
+            PropertyConfigurator.configure(LOG_PROPERTIES_FILENAME);
+            logSourceStr = String.format("from the '%s' file", LOG_PROPERTIES_FILENAME);
         } else {
             BasicConfigurator.configure();
             logSourceStr = "by default";
@@ -38,16 +39,16 @@ public class App {
 
     private static void processDirectory(String directoryPath) {
         try {
-            DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath, imageExtensions);
-            ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(widthRatio, heightRatio);
+            DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath, IMAGE_EXTENSIONS);
+            ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(WIDTH_RATIO, HEIGHT_RATIO);
             Logger imageFileProcessorLog = Logger.getLogger(ImageFileProcessor.class);
             ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageFileProcessorLog, imageStreamProcessor);
-            getLogger().info(String.format("Run in parallel mode (with %s threads).", threadsInPool));
-            ExecutorService executorService = Executors.newFixedThreadPool(threadsInPool);
+            getLogger().info(String.format("Run in parallel mode (with %s threads).", THREADS_IN_POOL));
+            ExecutorService executorService = Executors.newFixedThreadPool(THREADS_IN_POOL);
             ParallelFileProcessor parallelFileProcessor = new ParallelFileProcessor(executorService, imageFileProcessor);
             directoryScanner.scan(parallelFileProcessor);
             executorService.shutdown();
-            boolean terminatedOk = executorService.awaitTermination(timeoutValue, TimeUnit.HOURS);
+            boolean terminatedOk = executorService.awaitTermination(TIMEOUT_VALUE, TimeUnit.HOURS);
             if (!terminatedOk) {
                 getLogger().error("Execution of parallel subtasks was terminated by timeout.");
             } else {
