@@ -5,6 +5,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class App {
 
@@ -13,6 +16,8 @@ public class App {
     private static final int heightRatio = 2;
     private static final String[] imageExtensions = new String[]{"jpg", "png"};
 
+    private static final int threadsInPool = Runtime.getRuntime().availableProcessors();
+    private static final int timeoutValue = 1;
 
     private static Logger getLogger() {
         return Logger.getLogger(App.class);
@@ -37,7 +42,17 @@ public class App {
             ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(widthRatio, heightRatio);
             Logger imageFileProcessorLog = Logger.getLogger(ImageFileProcessor.class);
             ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageFileProcessorLog, imageStreamProcessor);
-            directoryScanner.scan(imageFileProcessor);
+            getLogger().info(String.format("Run in parallel mode (with %s threads).", threadsInPool));
+            ExecutorService executorService = Executors.newFixedThreadPool(threadsInPool);
+            ParallelFileProcessor parallelFileProcessor = new ParallelFileProcessor(executorService, imageFileProcessor);
+            directoryScanner.scan(parallelFileProcessor);
+            executorService.shutdown();
+            boolean terminatedOk = executorService.awaitTermination(timeoutValue, TimeUnit.HOURS);
+            if (!terminatedOk) {
+                getLogger().error("Execution of parallel subtasks was terminated by timeout.");
+            } else {
+                getLogger().info("Done.");
+            }
         } catch (Exception e) {
             getLogger().error(String.format("Error: %s.", e.getMessage()));
         }
