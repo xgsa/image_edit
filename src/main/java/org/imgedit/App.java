@@ -11,6 +11,7 @@ public class App {
     private static final String logPropertiesFilename = "log4j.properties";
     private static final int widthRatio = 2;
     private static final int heightRatio = 2;
+    private static final String[] imageExtensions = new String[]{"jpg", "png"};
 
 
     private static Logger getLogger() {
@@ -32,7 +33,7 @@ public class App {
 
     private static void processDirectory(String directoryPath) {
         try {
-            DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath);
+            DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath, imageExtensions);
             ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(widthRatio, heightRatio);
             Logger imageFileProcessorLog = Logger.getLogger(ImageFileProcessor.class);
             ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageFileProcessorLog, imageStreamProcessor);

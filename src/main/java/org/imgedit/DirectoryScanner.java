@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 
 public class DirectoryScanner {
     private String directoryPath;
+    private final String[] extensions;
 
 
     public static interface FileListener {
@@ -13,19 +14,28 @@ public class DirectoryScanner {
     }
 
 
-    private static class ImageFilenameFilter implements FilenameFilter {
+    private class ImageFilenameFilter implements FilenameFilter {
         @Override
         public boolean accept(File dir, String name) {
             String lowName = name.toLowerCase();
-            return lowName.endsWith(".jpg") || lowName.endsWith(".png");
+            for (String extension : extensions) {
+                if (lowName.endsWith(extension)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
-    private static final FilenameFilter imageFilenameFilter = new ImageFilenameFilter();
+    private final FilenameFilter imageFilenameFilter = new ImageFilenameFilter();
 
 
-    public DirectoryScanner(String directoryPath) {
+    public DirectoryScanner(String directoryPath, String[] extensions) {
         this.directoryPath = directoryPath;
+        this.extensions = new String[extensions.length];
+        for (int i = 0; i < extensions.length; i++) {
+            this.extensions[i] = extensions[i].toLowerCase();
+        }
     }
 
     public void scan(FileListener fileListener) throws Exception {
