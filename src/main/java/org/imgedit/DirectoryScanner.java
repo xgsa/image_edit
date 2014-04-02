@@ -25,7 +25,7 @@ public class DirectoryScanner {
 
     public void scan(ImageProcessor imageProcessor) throws Exception {
         File imagesDirectory = new File(directoryPath);
-        if (imagesDirectory.isDirectory()) {
+        if (imagesDirectory.exists() && imagesDirectory.isDirectory()) {
             for (File imageFile : imagesDirectory.listFiles(imageFilenameFilter)) {
                 imageProcessor.processImage(imageFile);
             }
