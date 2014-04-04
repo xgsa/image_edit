@@ -16,14 +16,6 @@ public class ImageFileProcessor implements DirectoryScanner.FileListener {
         this.imageStreamProcessor = imageStreamProcessor;
     }
 
-    private String getImageFormatStr(String imageFileName) {
-        if (imageFileName.toLowerCase().endsWith("png")) {
-            return "png";
-        } else {
-            return "jpg";
-        }
-    }
-
     private String getNewImageFileName(File currentImage) {
         return currentImage.getParent() + "/scaled_" + currentImage.getName();
     }
@@ -37,7 +29,7 @@ public class ImageFileProcessor implements DirectoryScanner.FileListener {
         try {
             inImageStream = new FileInputStream(imageFile);
             outImageStream = new FileOutputStream(getNewImageFileName(imageFile));
-            imageStreamProcessor.processImage(inImageStream, outImageStream, getImageFormatStr(imageFileName));
+            imageStreamProcessor.processImage(inImageStream, outImageStream);
         } catch (IOException e) {
             LOG.error(String.format("Error during processing image '%s': %s", imageFileName, e.getMessage()));
         } finally {

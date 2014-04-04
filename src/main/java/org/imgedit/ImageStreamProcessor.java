@@ -1,11 +1,15 @@
 package org.imgedit;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Iterator;
 
 public class ImageStreamProcessor {
 
@@ -33,11 +37,30 @@ public class ImageStreamProcessor {
         return bufImage;
     }
 
-    public void processImage(InputStream inputImage, OutputStream outputImage, String formatName) throws IOException {
-        BufferedImage inImage = ImageIO.read(inputImage);
+    public boolean processImage(InputStream inputImage, OutputStream outputImage) throws IOException {
+        ImageInputStream stream = ImageIO.createImageInputStream(inputImage);
+        Iterator iter = ImageIO.getImageReaders(stream);
+        if (!iter.hasNext()) {
+            return false;
+        }
+        ImageReader reader = (ImageReader) iter.next();
+        ImageReadParam param = reader.getDefaultReadParam();
+        reader.setInput(stream, true, true);
+        BufferedImage inImage;
+        try {
+            inImage = reader.read(0, param);
+        } finally {
+            reader.dispose();
+            stream.close();
+        }
+        if (inImage == null) {
+            stream.close();
+            return false;
+        }
         int newWidth = getImageNewWidth(inImage);
         int newHeight = getImageNewHeight(inImage);
         Image outImage = inImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
-        ImageIO.write(toBufferedImage(outImage), formatName, outputImage);
+        ImageIO.write(toBufferedImage(outImage), reader.getFormatName(), outputImage);
+        return true;
     }
 }
