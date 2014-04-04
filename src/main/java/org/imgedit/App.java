@@ -1,19 +1,13 @@
 package org.imgedit;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class App {
+public class App extends Env {
 
-    private static final String LOG_PROPERTIES_FILENAME = "log4j.properties";
-    private static final int WIDTH_RATIO = 2;
-    private static final int HEIGHT_RATIO = 2;
     private static final String[] IMAGE_EXTENSIONS = new String[]{"jpg", "png"};
 
     private static final int THREADS_IN_POOL = Runtime.getRuntime().availableProcessors();
@@ -21,19 +15,6 @@ public class App {
 
     private static final Logger LOG = Logger.getLogger(App.class);
 
-
-    private static void configureLogging() {
-        File logProperties = new File(LOG_PROPERTIES_FILENAME);
-        String logSourceStr;
-        if (logProperties.exists()) {
-            PropertyConfigurator.configure(LOG_PROPERTIES_FILENAME);
-            logSourceStr = String.format("from the '%s' file", LOG_PROPERTIES_FILENAME);
-        } else {
-            BasicConfigurator.configure();
-            logSourceStr = "by default";
-        }
-        LOG.info(String.format("Hi! The application was started, logging was configured %s!", logSourceStr));
-    }
 
     private static void processDirectory(String directoryPath) {
         try {
