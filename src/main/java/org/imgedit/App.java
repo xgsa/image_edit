@@ -37,6 +37,7 @@ public class App {
 
     private static void processDirectory(String directoryPath) {
         try {
+            long startTime = System.currentTimeMillis();
             DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath, IMAGE_EXTENSIONS);
             ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(WIDTH_RATIO, HEIGHT_RATIO);
             ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageStreamProcessor);
@@ -49,7 +50,7 @@ public class App {
             if (!terminatedOk) {
                 LOG.error("Execution of parallel subtasks was terminated by timeout.");
             } else {
-                LOG.info("Done.");
+                LOG.info(String.format("Done in %s sec.", (System.currentTimeMillis() - startTime) / 1000.0));
             }
         } catch (Exception e) {
             LOG.error(String.format("Error: %s.", e.getMessage()));
