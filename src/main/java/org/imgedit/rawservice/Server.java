@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 
 public class Server extends Env {
 
-    private static final int PORT = 8080;
+    private static final int PORT = 8888;
     private static final int MAX_FRAME_SIZE = 10*1024*1024;  // 10 Mb seems quite enough
 
     private static final Logger LOG = Logger.getLogger(Server.class);
