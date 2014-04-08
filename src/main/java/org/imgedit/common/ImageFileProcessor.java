@@ -1,4 +1,4 @@
-package org.imgedit;
+package org.imgedit.common;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;

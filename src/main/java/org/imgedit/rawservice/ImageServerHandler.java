@@ -1,5 +1,7 @@
-package org.imgedit;
+package org.imgedit.rawservice;
 
+import org.imgedit.common.ImageStreamProcessor;
+import org.imgedit.common.ResizeImageInfo;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;

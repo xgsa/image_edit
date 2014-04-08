@@ -1,4 +1,4 @@
-package org.imgedit;
+package org.imgedit.common;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;

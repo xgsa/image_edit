@@ -1,4 +1,4 @@
-package org.imgedit;
+package org.imgedit.common;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;

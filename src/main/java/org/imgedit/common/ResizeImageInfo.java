@@ -1,4 +1,4 @@
-package org.imgedit;
+package org.imgedit.common;
 
 
 public class ResizeImageInfo {

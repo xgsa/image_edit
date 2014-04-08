@@ -1,6 +1,8 @@
-package org.imgedit;
+package org.imgedit.rawservice;
 
 import org.apache.log4j.Logger;
+import org.imgedit.common.Env;
+import org.imgedit.common.ImageStreamProcessor;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
