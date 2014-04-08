@@ -38,7 +38,7 @@ public class ImageServerHandler extends SimpleChannelUpstreamHandler {
         // NOTE: Allocating buffer of availableBytes length allocates extra memory. but avoid memory relocation.
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(availableBytes);
         try {
-            imageStreamProcessor.processImage(inputStream, outputStream);
+            imageStreamProcessor.resizeImage(inputStream, outputStream, new ResizeImageInfo(100, 100));
         } catch (IOException x) {
             LOG.error("Unexpected exception during of processing image.", x.getCause());
         }

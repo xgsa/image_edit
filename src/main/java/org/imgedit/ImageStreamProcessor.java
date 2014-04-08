@@ -13,22 +13,6 @@ import java.util.Iterator;
 
 public class ImageStreamProcessor {
 
-    private final int widthRatio, heightRatio;
-
-
-    public ImageStreamProcessor(int widthRatio, int heightRatio) {
-        this.widthRatio = widthRatio;
-        this.heightRatio = heightRatio;
-    }
-
-    private int getImageNewWidth(BufferedImage inImage) {
-        return inImage.getWidth() / widthRatio;
-    }
-
-    private int getImageNewHeight(BufferedImage inImage) {
-        return inImage.getHeight() / heightRatio;
-    }
-
     private BufferedImage toBufferedImage(Image src) {
         BufferedImage bufImage = new BufferedImage(src.getWidth(null), src.getHeight(null), BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = bufImage.createGraphics();
@@ -37,7 +21,8 @@ public class ImageStreamProcessor {
         return bufImage;
     }
 
-    public boolean processImage(InputStream inputImage, OutputStream outputImage) throws IOException {
+    public boolean resizeImage(InputStream inputImage, OutputStream outputImage, ResizeImageInfo imageInfo)
+            throws IOException {
         ImageInputStream stream = ImageIO.createImageInputStream(inputImage);
         Iterator iter = ImageIO.getImageReaders(stream);
         if (!iter.hasNext()) {
@@ -57,9 +42,7 @@ public class ImageStreamProcessor {
             stream.close();
             return false;
         }
-        int newWidth = getImageNewWidth(inImage);
-        int newHeight = getImageNewHeight(inImage);
-        Image outImage = inImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
+        Image outImage = inImage.getScaledInstance(imageInfo.getWidth(), imageInfo.getHeight(), Image.SCALE_DEFAULT);
         ImageIO.write(toBufferedImage(outImage), reader.getFormatName(), outputImage);
         return true;
     }

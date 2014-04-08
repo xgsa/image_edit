@@ -10,8 +10,6 @@ import java.io.File;
 public class Env {
 
     protected static final String LOG_PROPERTIES_FILENAME = "log4j.properties";
-    protected static final int WIDTH_RATIO = 2;
-    protected static final int HEIGHT_RATIO = 2;
 
     protected static final Logger LOG = Logger.getLogger(Env.class);
 

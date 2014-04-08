@@ -2,6 +2,7 @@ package org.imgedit;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -19,12 +20,19 @@ public class App extends Env {
     private static void processDirectory(String directoryPath) {
         try {
             long startTime = System.currentTimeMillis();
-            DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath, IMAGE_EXTENSIONS);
-            ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(WIDTH_RATIO, HEIGHT_RATIO);
-            ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageStreamProcessor);
+            final DirectoryScanner directoryScanner = new DirectoryScanner(directoryPath, IMAGE_EXTENSIONS);
+            final ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor();
+            final ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageStreamProcessor);
             LOG.info(String.format("Run in parallel mode (with %s threads).", THREADS_IN_POOL));
             ExecutorService executorService = Executors.newFixedThreadPool(THREADS_IN_POOL);
-            ParallelFileProcessor parallelFileProcessor = new ParallelFileProcessor(executorService, imageFileProcessor);
+            DirectoryScanner.FileListener imagesListener = new DirectoryScanner.FileListener() {
+                @Override
+                public void onFile(File file) {
+                    String newFileName = file.getParent() + "/scaled_" + file.getName();
+                    imageFileProcessor.resizeImage(file, new ResizeImageInfo(100, 100, newFileName));
+                }
+            };
+            ParallelFileProcessor parallelFileProcessor = new ParallelFileProcessor(executorService, imagesListener);
             directoryScanner.scan(parallelFileProcessor);
             executorService.shutdown();
             boolean terminatedOk = executorService.awaitTermination(TIMEOUT_VALUE, TimeUnit.HOURS);

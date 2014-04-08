@@ -21,7 +21,7 @@ public class Server extends Env {
 
 
     public static void run() {
-        final ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor(WIDTH_RATIO, HEIGHT_RATIO);
+        final ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor();
 
         // Configure the server.
         ServerBootstrap bootstrap = new ServerBootstrap(
