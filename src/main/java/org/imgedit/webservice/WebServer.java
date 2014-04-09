@@ -20,15 +20,12 @@ import java.util.concurrent.Executors;
 
 public class WebServer extends Env {
 
-    private static final String BASE_DIRECTORY = ".";
-    private static final int PORT = 8080;
-
     private static final int MAX_FRAME_SIZE = 10*1024*1024;  // 10 Mb seems quite enough
 
     private static final Logger LOG = Logger.getLogger(WebServer.class);
 
 
-    public static void run() {
+    public static void run(final CliHandler cliHandler) {
         final ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor();
         final ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageStreamProcessor);
 
@@ -47,18 +44,21 @@ public class WebServer extends Env {
                         new HttpChunkAggregator(MAX_FRAME_SIZE),
                         new HttpResponseEncoder(),
                         new HttpContentCompressor(),
-                        new WebServerHandler(imageFileProcessor, BASE_DIRECTORY)
+                        new WebServerHandler(imageFileProcessor, cliHandler.getBaseDirectory())
                 );
             }
         });
 
         // Bind and start to accept incoming connections.
-        LOG.info(String.format("Listening on %s...", PORT));
-        bootstrap.bind(new InetSocketAddress(PORT));
+        LOG.info(String.format("Listening on %s...", cliHandler.getPort()));
+        bootstrap.bind(new InetSocketAddress(cliHandler.getPort()));
     }
 
     public static void main(String[] args) {
-        configureLogging();
-        run();
+        CliHandler cliHandler = new CliHandler();
+        if (cliHandler.run(args)) {
+            configureLogging();
+            run(cliHandler);
+        }
     }
 }
