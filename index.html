@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image processor service!</title>
+</head>
+<body>
+
+<h1>Welcome to the image processor service!</h1>
+
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <p>
+        Upload a new image: <input type="file" name="imagefile">
+    </p>
+    <p>
+        Resize image to size:
+        <input type="text" name="width"  size="1"> X <input type="text" name="Height"  size="1">
+    </p>
+    <p>
+        <input type="submit" value="Upload">
+    </p>
+</form>
+<HR>
+<h4>Available images:</h4>
+<!--ImagesListPlaceHolder-->
+</body>
+</html>
