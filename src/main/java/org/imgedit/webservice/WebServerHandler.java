@@ -42,12 +42,14 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
     private ImageFileProcessor imageFileProcessor;
     private String baseDirectory;
     private DirectoryScanner directoryScanner;
+    private FileAccessor fileAccessor;
 
     private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 
 
-    public WebServerHandler(ImageFileProcessor imageFileProcessor, String baseDirectory) {
+    public WebServerHandler(ImageFileProcessor imageFileProcessor, FileAccessor fileAccessor, String baseDirectory) {
         this.imageFileProcessor = imageFileProcessor;
+        this.fileAccessor = fileAccessor;
         this.baseDirectory = baseDirectory;
         this.directoryScanner = new DirectoryScanner(baseDirectory, new String[]{"jpg", "png"});
     }
@@ -176,9 +178,9 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             response = new DefaultHttpResponse(HTTP_1_1, OK);
             // Actually, we don't know the content type, so don't help browser to detect it.
             //response.headers().set(CONTENT_TYPE, "image/jpeg");
-            byte[] imageFile = new byte[0];
+            byte[] imageFile;
             try {
-                imageFile = Files.readAllBytes(filePath);
+                imageFile = fileAccessor.getFile(filePath);
             } catch (IOException e) {
                 throw new ClientErrorException(String.format("Unable to access file '%s'", uriStr));
             }
@@ -216,7 +218,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             throw new ClientErrorException(e.getMessage());
         }
 
-        byte[] mainPageFile = Files.readAllBytes(Paths.get(MAIN_HTML_NAME));
+        byte[] mainPageFile = fileAccessor.getFile(Paths.get(MAIN_HTML_NAME));
 
         byte[] result = new byte[mainPageFile.length + strBuf.length()];
         int placeholderIdx = Bytes.indexOf(mainPageFile, IMAGES_LIST_PLACE_HOLDER.getBytes());

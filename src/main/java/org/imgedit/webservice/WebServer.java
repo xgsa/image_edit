@@ -15,6 +15,7 @@ import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
 import java.net.InetSocketAddress;
+import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 
 
@@ -28,6 +29,14 @@ public class WebServer extends Env {
     public static void run(final CliHandler cliHandler) {
         final ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor();
         final ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageStreamProcessor);
+        final FileAccessor fileAccessor = new FileAccessor();
+        final CachedFileAccessor cachedFileAccessor = new CachedFileAccessor(fileAccessor);
+        imageFileProcessor.addFileChangeListener(new ImageFileProcessor.FileChangeListener() {
+            @Override
+            public void onFileChange(String filePath) {
+                cachedFileAccessor.invalidateFile(Paths.get(filePath));
+            }
+        });
 
         // Configure the server.
         ServerBootstrap bootstrap = new ServerBootstrap(
@@ -44,7 +53,7 @@ public class WebServer extends Env {
                         new HttpChunkAggregator(MAX_FRAME_SIZE),
                         new HttpResponseEncoder(),
                         new HttpContentCompressor(),
-                        new WebServerHandler(imageFileProcessor, cliHandler.getBaseDirectory())
+                        new WebServerHandler(imageFileProcessor, cachedFileAccessor, cliHandler.getBaseDirectory())
                 );
             }
         });
