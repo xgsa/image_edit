@@ -26,7 +26,7 @@ public class WebServer extends Env {
     private static final Logger LOG = Logger.getLogger(WebServer.class);
 
 
-    public static void run(final CliHandler cliHandler) {
+    private static void run(final CliHandler cliHandler) {
         final ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor();
         final ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageStreamProcessor);
         final CachedFileAccessor cachedFileAccessor = new CachedFileAccessor(new SimpleFileAccessor());

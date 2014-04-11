@@ -1,7 +1,6 @@
 package org.imgedit.application;
 
 import org.apache.log4j.Logger;
-import org.imgedit.common.Env;
 import org.imgedit.common.*;
 
 import java.io.File;

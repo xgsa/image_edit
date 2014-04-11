@@ -18,7 +18,7 @@ public class ImageFileProcessor {
 
     private final ImageStreamProcessor imageStreamProcessor;
 
-    private List<FileChangeListener> fileChangeListeners = new ArrayList<>();
+    private final List<FileChangeListener> fileChangeListeners = new ArrayList<>();
 
 
     public ImageFileProcessor(ImageStreamProcessor imageStreamProcessor) {

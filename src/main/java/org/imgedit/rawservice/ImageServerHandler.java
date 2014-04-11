@@ -22,7 +22,7 @@ public class ImageServerHandler extends SimpleChannelUpstreamHandler {
 
     private static final Logger LOG = Logger.getLogger(ImageServerHandler.class.getName());
 
-    private ImageStreamProcessor imageStreamProcessor;
+    private final ImageStreamProcessor imageStreamProcessor;
 
 
     public ImageServerHandler(ImageStreamProcessor imageStreamProcessor) {

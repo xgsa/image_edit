@@ -8,17 +8,18 @@ public class CliHandler {
 
     private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
 
-    public final static String BASE_DIRECTORY = "base-directory";
-    public final static String PORT = "port";
+    private final static String BASE_DIRECTORY = "base-directory";
+    private final static String PORT = "port";
 
-    public final static String BASE_DIRECTORY_DEFAULT = "./";
-    public final static int PORT_DEFAULT = 8080;
+    private final static String BASE_DIRECTORY_DEFAULT = "./";
+    private final static int PORT_DEFAULT = 8080;
 
-    private Options options;
+    private final Options options;
+    private final CommandLineParser parser;
     private CommandLine line;
-    private CommandLineParser parser;
 
 
+    @SuppressWarnings("AccessStaticViaInstance")
     public CliHandler() {
         options = new Options();
         options.addOption(OptionBuilder.withLongOpt("help")

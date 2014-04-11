@@ -9,9 +9,9 @@ import java.io.File;
 
 public class Env {
 
-    protected static final String LOG_PROPERTIES_FILENAME = "log4j.properties";
+    private static final String LOG_PROPERTIES_FILENAME = "log4j.properties";
 
-    protected static final Logger LOG = Logger.getLogger(Env.class);
+    private static final Logger LOG = Logger.getLogger(Env.class);
 
 
     protected static void configureLogging() {

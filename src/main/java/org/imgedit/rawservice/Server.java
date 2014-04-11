@@ -22,7 +22,7 @@ public class Server extends Env {
     private static final Logger LOG = Logger.getLogger(Server.class);
 
 
-    public static void run() {
+    private static void run() {
         final ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor();
 
         // Configure the server.

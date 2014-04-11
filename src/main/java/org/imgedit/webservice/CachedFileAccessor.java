@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.apache.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
@@ -14,12 +15,12 @@ public class CachedFileAccessor implements FileAccessor {
 
     private static final Logger LOG = Logger.getLogger(CachedFileAccessor.class);
 
-    private FileAccessor originalFileAccessor;
-    private LoadingCache<Path, byte[]> cache = CacheBuilder.newBuilder()
+    private final FileAccessor originalFileAccessor;
+    private final LoadingCache<Path, byte[]> cache = CacheBuilder.newBuilder()
             .maximumSize(10)
             .build(
                 new CacheLoader<Path, byte[]>() {
-                    public byte[] load(Path key) throws IOException {
+                    public byte[] load(@Nonnull Path key) throws IOException {
                         LOG.info(String.format("Cache miss for the '%s' file ", key));
                         return originalFileAccessor.getFile(key);
                     }

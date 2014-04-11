@@ -2,9 +2,9 @@ package org.imgedit.common;
 
 
 public class ResizeImageInfo {
-    private int width;
-    private int height;
-    private String name;
+    private final int width;
+    private final int height;
+    private final String name;
 
 
     public ResizeImageInfo(int width, int height) {

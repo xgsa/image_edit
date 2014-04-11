@@ -41,10 +41,10 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private static final String[] EXTENSIONS_TO_SCAN = new String[]{"jpg", "png"};
 
-    private ImageFileProcessor imageFileProcessor;
-    private String baseDirectory;
-    private DirectoryScanner directoryScanner;
-    private FileAccessor fileAccessor;
+    private final ImageFileProcessor imageFileProcessor;
+    private final String baseDirectory;
+    private final DirectoryScanner directoryScanner;
+    private final FileAccessor fileAccessor;
 
     private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 
@@ -53,7 +53,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         this.imageFileProcessor = imageFileProcessor;
         this.fileAccessor = fileAccessor;
         this.baseDirectory = baseDirectory;
-        this.directoryScanner = new DirectoryScanner(baseDirectory, EXTENSIONS_TO_SCAN);
+        directoryScanner = new DirectoryScanner(baseDirectory, EXTENSIONS_TO_SCAN);
         try {
             Files.createDirectories(Paths.get(baseDirectory));
         } catch (IOException e) {
@@ -171,7 +171,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         }
     }
 
-    private HttpResponse getImage(String uriStr) throws ClientErrorException {
+    private HttpResponse getImage(String uriStr) {
         HttpResponse response;
         Path filePath = Paths.get(baseDirectory, uriStr);
         LOG.info(String.format("Access the '%s' image file", uriStr));
@@ -189,7 +189,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         return response;
     }
 
-    private HttpResponse getMainPage() throws IOException, ClientErrorException {
+    private HttpResponse getMainPage() throws IOException {
         HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
         response.headers().set(CONTENT_TYPE, "text/html");
         response.setContent(ChannelBuffers.copiedBuffer(generateMainPage()));
@@ -197,7 +197,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         return response;
     }
 
-    private byte[] generateMainPage() throws ClientErrorException, IOException {
+    private byte[] generateMainPage() throws IOException {
         final StringBuilder strBuf = new StringBuilder();
         directoryScanner.scan(new DirectoryScanner.FileListener() {
             @Override
@@ -221,7 +221,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         } else {
             // Just do not substitute
             result = mainPageFile;
-            LOG.warn(String.format("The '%s' file does not containt the '%s' place holder. Images list " +
+            LOG.warn(String.format("The '%s' file does not contain the '%s' place holder. Images list " +
                     "will not be substituted", MAIN_HTML_NAME, new String(IMAGES_LIST_PLACE_HOLDER, "UTF-8")));
         }
 
