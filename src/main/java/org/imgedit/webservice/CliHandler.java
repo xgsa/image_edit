@@ -1,9 +1,12 @@
 package org.imgedit.webservice;
 
 import org.apache.commons.cli.*;
+import org.apache.log4j.Logger;
 
 
 public class CliHandler {
+
+    private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
 
     public final static String BASE_DIRECTORY = "base-directory";
     public final static String PORT = "port";
@@ -60,9 +63,13 @@ public class CliHandler {
     private Integer getIntOption(String optionName, int defaultValue) {
         int result = defaultValue;
         if (line.hasOption(optionName)) {
+            String portStr = line.getOptionValue(optionName);
             try {
-                result = Integer.parseInt(line.getOptionValue(optionName));
-            } catch (NumberFormatException e) {}
+                result = Integer.parseInt(portStr);
+            } catch (NumberFormatException e) {
+                LOG.error(String.format("The '%s' value is not a valid number. " +
+                        "The default one (%s) is used.", portStr, defaultValue));
+            }
         }
         return result;
     }

@@ -29,8 +29,7 @@ public class WebServer extends Env {
     public static void run(final CliHandler cliHandler) {
         final ImageStreamProcessor imageStreamProcessor = new ImageStreamProcessor();
         final ImageFileProcessor imageFileProcessor = new ImageFileProcessor(imageStreamProcessor);
-        final FileAccessor fileAccessor = new FileAccessor();
-        final CachedFileAccessor cachedFileAccessor = new CachedFileAccessor(fileAccessor);
+        final CachedFileAccessor cachedFileAccessor = new CachedFileAccessor(new SimpleFileAccessor());
         imageFileProcessor.addFileChangeListener(new ImageFileProcessor.FileChangeListener() {
             @Override
             public void onFileChange(String filePath) {

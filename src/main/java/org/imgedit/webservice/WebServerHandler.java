@@ -7,10 +7,7 @@ import org.imgedit.common.ImageFileProcessor;
 import org.imgedit.common.ResizeImageInfo;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.*;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.*;
 import org.jboss.netty.handler.codec.http.multipart.*;
 import org.jboss.netty.util.CharsetUtil;
 
@@ -34,10 +31,15 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
     private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
 
     private static final String MAIN_HTML_NAME = "./index.html";
-    private static final String IMAGES_LIST_PLACE_HOLDER = "<!--ImagesListPlaceHolder-->";
+    private static final byte[] IMAGES_LIST_PLACE_HOLDER = "<!--ImagesListPlaceHolder-->".getBytes();
 
     private static final String IMAGE_URI_PATH = "/image";
     private static final String UPLOAD_URI_PATH = "/upload";
+
+    private static final String IMAGE_ITEM_PATTERN = "<a href=\"/image/%s\">" +
+            "<img src=\"/image/%s\" width=\"30\" height=\"30\"> %s</a><BR>";
+
+    private static final String[] EXTENSIONS_TO_SCAN = new String[]{"jpg", "png"};
 
     private ImageFileProcessor imageFileProcessor;
     private String baseDirectory;
@@ -51,7 +53,12 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         this.imageFileProcessor = imageFileProcessor;
         this.fileAccessor = fileAccessor;
         this.baseDirectory = baseDirectory;
-        this.directoryScanner = new DirectoryScanner(baseDirectory, new String[]{"jpg", "png"});
+        this.directoryScanner = new DirectoryScanner(baseDirectory, EXTENSIONS_TO_SCAN);
+        try {
+            Files.createDirectories(Paths.get(baseDirectory));
+        } catch (IOException e) {
+            LOG.error(String.format("Unable to create base directory '%s'", baseDirectory));
+        }
     }
 
     @Override
@@ -65,15 +72,14 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             HttpResponse response;
             try {
                 if (request.isChunked()) {
-                    // NOTE: This error should never happen if pipeline was configured properly
-                    //       (HttpChunkAggregator is added)
-                    throw new Exception("Chunked requests are not supported (yet?)");
+                    throw new IllegalStateException("This handler should be used in pipeline " +
+                            "after HttpChunkAggregator, so chunked request is not possible");
                 }
                 String uriPath = getURIPath(uriStr);
                 if (uriPath.startsWith(IMAGE_URI_PATH)) {
                     LOG.info("Return image");
                     response = getImage(uriPath.substring(IMAGE_URI_PATH.length()));
-                } else if (uriPath.startsWith(UPLOAD_URI_PATH) && request.getMethod().getName().equals("POST")) {
+                } else if (uriPath.startsWith(UPLOAD_URI_PATH) && request.getMethod().equals(HttpMethod.POST)) {
                     LOG.info("Upload image");
                     response = uploadImage(request);
                 } else {
@@ -96,18 +102,13 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         try {
             decodedUriStr = URLDecoder.decode(uriStr, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            try {
-                decodedUriStr = URLDecoder.decode(uriStr, "ISO-8859-1");
-            } catch (UnsupportedEncodingException e1) {
-                LOG.warn(String.format("Unable to decode uri '%s', leave it as is", uriStr));
-            }
+            LOG.warn(String.format("Unable to decode uri '%s', leave it as is", uriStr));
         }
         URI uri;
         try {
             uri = new URI(decodedUriStr);
         } catch (URISyntaxException e1) {
             String msg = String.format("Invalid URI '%s'.", decodedUriStr);
-            LOG.error(msg);
             throw new ClientErrorException(msg);
         }
         return uri.getPath();
@@ -174,20 +175,16 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         HttpResponse response;
         Path filePath = Paths.get(baseDirectory, uriStr);
         LOG.info(String.format("Access the '%s' image file", uriStr));
-        if (Files.exists(filePath)) {
-            response = new DefaultHttpResponse(HTTP_1_1, OK);
-            // Actually, we don't know the content type, so don't help browser to detect it.
-            //response.headers().set(CONTENT_TYPE, "image/jpeg");
-            byte[] imageFile;
-            try {
-                imageFile = fileAccessor.getFile(filePath);
-            } catch (IOException e) {
-                throw new ClientErrorException(String.format("Unable to access file '%s'", uriStr));
-            }
+        response = new DefaultHttpResponse(HTTP_1_1, OK);
+        // Actually, we don't know the content type, so don't help browser to detect it.
+        //response.headers().set(CONTENT_TYPE, "image/jpeg");
+        byte[] imageFile;
+        try {
+            imageFile = fileAccessor.getFile(filePath);
             response.setContent(ChannelBuffers.copiedBuffer(imageFile));
             response.headers().set(CONTENT_LENGTH, response.getContent().readableBytes());
-        } else {
-            response = getErrorResponse(NOT_FOUND, String.format("The '%s' file was not found!", uriStr));
+        } catch (IOException e) {
+            response = getErrorResponse(NOT_FOUND, String.format("Unable to access file '%s'", uriStr));
         }
         return response;
     }
@@ -202,26 +199,19 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private byte[] generateMainPage() throws ClientErrorException, IOException {
         final StringBuilder strBuf = new StringBuilder();
-        try {
-            directoryScanner.scan(new DirectoryScanner.FileListener() {
-                @Override
-                public void onFile(File file) {
-                    if (file.canRead()) {
-                        strBuf.append(String.format("<a href=\"/image/%s\">" +
-                                        "<img src=\"/image/%s\" width=\"30\" height=\"30\"> %s</a><BR>",
-                                file.getName(), file.getName(), file.getName()
-                        ));
-                    }
+        directoryScanner.scan(new DirectoryScanner.FileListener() {
+            @Override
+            public void onFile(File file) {
+                if (file.canRead()) {
+                    strBuf.append(String.format(IMAGE_ITEM_PATTERN, file.getName(), file.getName(), file.getName()));
                 }
-            });
-        } catch (Exception e) {
-            throw new ClientErrorException(e.getMessage());
-        }
+            }
+        });
 
         byte[] mainPageFile = fileAccessor.getFile(Paths.get(MAIN_HTML_NAME));
 
-        byte[] result = new byte[mainPageFile.length + strBuf.length()];
-        int placeholderIdx = Bytes.indexOf(mainPageFile, IMAGES_LIST_PLACE_HOLDER.getBytes());
+        byte[] result;
+        int placeholderIdx = Bytes.indexOf(mainPageFile, IMAGES_LIST_PLACE_HOLDER);
         if (placeholderIdx != -1) {
             result = new byte[mainPageFile.length + strBuf.length()];
             System.arraycopy(mainPageFile, 0, result, 0, placeholderIdx);
@@ -230,8 +220,9 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
                     mainPageFile.length - placeholderIdx);
         } else {
             // Just do not substitute
-            LOG.warn(String.format("The '%s' file does not containt the '%s' place holder. " +
-                    "Images list will not be substituted", MAIN_HTML_NAME, IMAGES_LIST_PLACE_HOLDER));
+            result = mainPageFile;
+            LOG.warn(String.format("The '%s' file does not containt the '%s' place holder. Images list " +
+                    "will not be substituted", MAIN_HTML_NAME, new String(IMAGES_LIST_PLACE_HOLDER, "UTF-8")));
         }
 
         return result;

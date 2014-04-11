@@ -1,10 +1,15 @@
 package org.imgedit.common;
 
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FilenameFilter;
 
 public class DirectoryScanner {
+
+    private static final Logger LOG = Logger.getLogger(DirectoryScanner.class.getName());
+
     private final String directoryPath;
     private final String[] extensions;
 
@@ -38,7 +43,7 @@ public class DirectoryScanner {
         }
     }
 
-    public void scan(FileListener fileListener) throws Exception {
+    public void scan(FileListener fileListener) {
         File imagesDirectory = new File(directoryPath);
         if (imagesDirectory.exists() && imagesDirectory.isDirectory()) {
             for (File imageFile : imagesDirectory.listFiles(imageFilenameFilter)) {
@@ -46,7 +51,7 @@ public class DirectoryScanner {
             }
         } else {
             // Yep, more specific exception should be thrown here
-            throw new Exception(String.format("The '%s' path does not exist or is not a directory!", directoryPath));
+            LOG.error(String.format("The '%s' path does not exist or is not a directory!", directoryPath));
         }
     }
 }

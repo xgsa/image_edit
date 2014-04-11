@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 
 
-public class CachedFileAccessor extends FileAccessor {
+public class CachedFileAccessor implements FileAccessor {
 
     private static final Logger LOG = Logger.getLogger(CachedFileAccessor.class);
 
