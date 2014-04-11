@@ -40,13 +40,14 @@ public class ImageServerHandler extends SimpleChannelUpstreamHandler {
         // NOTE: Allocating buffer of availableBytes length allocates extra memory. but avoid memory relocation.
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(availableBytes);
         try {
-            imageStreamProcessor.resizeImage(inputStream, outputStream, new ResizeImageInfo(100, 100));
+            if (imageStreamProcessor.resizeImage(inputStream, outputStream, new ResizeImageInfo(100, 100))) {
+                // NOTE: It is not very optimal that the result buffer is copied twice:
+                //       once - in toByteArray() and once again - in copiedBuffer().
+                e.getChannel().write(copiedBuffer(outputStream.toByteArray()));
+            }
         } catch (IOException x) {
             LOG.error("Unexpected exception during of processing image.", x.getCause());
         }
-        // NOTE: It is not very optimal that the result buffer is copied twice:
-        //       once - in toByteArray() and once again - in copiedBuffer().
-        e.getChannel().write(copiedBuffer(outputStream.toByteArray()));
     }
 
     @Override
