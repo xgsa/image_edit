@@ -1,11 +1,16 @@
 package org.imgedit.webservice;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 
 public interface FileAccessor {
 
-    public byte[] getFile(Path filePath) throws IOException;
+    public static interface FileHandler {
+        public void onFile(byte[] content);
+
+        public void onError(Throwable e);
+    }
+
+    public void getFile(Path filePath, FileHandler fileHandler);
 
 }

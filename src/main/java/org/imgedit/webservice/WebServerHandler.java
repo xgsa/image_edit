@@ -19,9 +19,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.jboss.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 
@@ -46,6 +46,9 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
     private final DirectoryScanner directoryScanner;
     private final FileAccessor fileAccessor;
 
+    private byte[] mainPageFile;
+    private int mainPagePlaceHolderIndex = -1;
+
     private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 
 
@@ -54,10 +57,30 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         this.fileAccessor = fileAccessor;
         this.baseDirectory = baseDirectory;
         directoryScanner = new DirectoryScanner(baseDirectory, EXTENSIONS_TO_SCAN);
+        ensureBaseDirectoryExists(baseDirectory);
+        loadMainPageContent();
+    }
+
+    private void ensureBaseDirectoryExists(String baseDirectory) {
         try {
             Files.createDirectories(Paths.get(baseDirectory));
         } catch (IOException e) {
             LOG.error(String.format("Unable to create base directory '%s'", baseDirectory));
+        }
+    }
+
+    private void loadMainPageContent() {
+        try {
+            mainPageFile = Files.readAllBytes(Paths.get(MAIN_HTML_NAME));
+            mainPagePlaceHolderIndex = Bytes.indexOf(mainPageFile, IMAGES_LIST_PLACE_HOLDER);
+            if (mainPagePlaceHolderIndex == -1) {
+                LOG.warn(String.format("The '%s' file does not contain the '%s' place holder. Images list " +
+                        "will not be substituted", MAIN_HTML_NAME, new String(IMAGES_LIST_PLACE_HOLDER, "UTF-8")));
+            }
+        } catch (IOException e) {
+            String msg = String.format("Unable to load the '%s' main page file.", MAIN_HTML_NAME);
+            LOG.error(msg);
+            mainPageFile = msg.getBytes();
         }
     }
 
@@ -69,7 +92,9 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             String uriStr = request.getUri();
             LOG.info(String.format("Handle request '%s'...", uriStr));
 
-            HttpResponse response;
+            boolean keepAlive = isKeepAlive(request);
+            Channel channel = ctx.getChannel();
+            HttpResponse response = null;
             try {
                 if (request.isChunked()) {
                     throw new IllegalStateException("This handler should be used in pipeline " +
@@ -78,7 +103,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
                 String uriPath = getURIPath(uriStr);
                 if (uriPath.startsWith(IMAGE_URI_PATH)) {
                     LOG.info("Return image");
-                    response = getImage(uriPath.substring(IMAGE_URI_PATH.length()));
+                    respondImage(uriPath.substring(IMAGE_URI_PATH.length()), channel, keepAlive);
                 } else if (uriPath.startsWith(UPLOAD_URI_PATH) && request.getMethod().equals(HttpMethod.POST)) {
                     LOG.info("Upload image");
                     response = uploadImage(request);
@@ -93,7 +118,9 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
                 response = HttpResponseBuilder.make(INTERNAL_SERVER_ERROR).withErrorContent(x).build();
                 LOG.error("Internal error: " + x.getMessage());
             }
-            ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
+            if (response != null) {
+                writeResponse(channel, response, keepAlive);
+            }
         }
     }
 
@@ -160,21 +187,25 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         }
     }
 
-    private HttpResponse getImage(String uriStr) {
-        HttpResponse response;
-        Path filePath = Paths.get(baseDirectory, uriStr);
+    private void respondImage(final String uriStr, final Channel channel, final boolean keepAlive) throws IOException {
         LOG.info(String.format("Access the '%s' image file", uriStr));
-        try {
-            byte[] imageFile = fileAccessor.getFile(filePath);
-            // NOTE: The content type is unknown, so don't set the "Content-Type" header.
-            response = HttpResponseBuilder.makeOk().withContent(imageFile).build();
-        } catch (IOException e) {
-            response = HttpResponseBuilder
-                .make(HttpResponseStatus.NOT_FOUND)
-                .withErrorContent(String.format("Unable to access file '%s'", uriStr))
-                .build();
-        }
-        return response;
+        fileAccessor.getFile(Paths.get(baseDirectory, uriStr), new FileAccessor.FileHandler() {
+            @Override
+            public void onFile(byte[] content) {
+                // NOTE: The content type is unknown, so don't set the "Content-Type" header.
+                HttpResponse response = HttpResponseBuilder.makeOk().withContent(content).build();
+                writeResponse(channel, response, keepAlive);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                HttpResponse response = HttpResponseBuilder
+                        .make(HttpResponseStatus.NOT_FOUND)
+                        .withErrorContent(String.format("Unable to access file '%s'", uriStr))
+                        .build();
+                writeResponse(channel, response, keepAlive);
+            }
+        });
     }
 
     private HttpResponse getMainPage() throws IOException {
@@ -188,21 +219,13 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             }
         });
 
-        byte[] mainPageFile = Files.readAllBytes(Paths.get(MAIN_HTML_NAME));
-
-        byte[] mainPage;
-        int placeholderIdx = Bytes.indexOf(mainPageFile, IMAGES_LIST_PLACE_HOLDER);
-        if (placeholderIdx != -1) {
+        byte[] mainPage = mainPageFile;
+        if (mainPagePlaceHolderIndex != -1) {
             mainPage = new byte[mainPageFile.length + strBuf.length()];
-            System.arraycopy(mainPageFile, 0, mainPage, 0, placeholderIdx);
-            System.arraycopy(strBuf.toString().getBytes(), 0, mainPage, placeholderIdx, strBuf.length());
-            System.arraycopy(mainPageFile, placeholderIdx, mainPage, placeholderIdx + strBuf.length(),
-                    mainPageFile.length - placeholderIdx);
-        } else {
-            // Just do not substitute
-            mainPage = mainPageFile;
-            LOG.warn(String.format("The '%s' file does not contain the '%s' place holder. Images list " +
-                    "will not be substituted", MAIN_HTML_NAME, new String(IMAGES_LIST_PLACE_HOLDER, "UTF-8")));
+            System.arraycopy(mainPageFile, 0, mainPage, 0, mainPagePlaceHolderIndex);
+            System.arraycopy(strBuf.toString().getBytes(), 0, mainPage, mainPagePlaceHolderIndex, strBuf.length());
+            System.arraycopy(mainPageFile, mainPagePlaceHolderIndex, mainPage, mainPagePlaceHolderIndex + strBuf.length(),
+                    mainPageFile.length - mainPagePlaceHolderIndex);
         }
         return HttpResponseBuilder.makeOk().withHtml(mainPage).build();
     }
@@ -212,5 +235,12 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         // Close the connection when an exception is raised.
         LOG.error("Unexpected exception from downstream.", e.getCause());
         e.getChannel().close();
+    }
+
+    private void writeResponse(Channel channel, HttpResponse response, boolean keepAlive) {
+        ChannelFuture writeFuture = channel.write(response);
+        if (!keepAlive) {
+            writeFuture.addListener(ChannelFutureListener.CLOSE);
+        }
     }
 }

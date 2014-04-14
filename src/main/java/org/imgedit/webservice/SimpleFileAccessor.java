@@ -1,18 +1,41 @@
 package org.imgedit.webservice;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.file.Path;
 
 
 public class SimpleFileAccessor implements FileAccessor {
 
-    public byte[] getFile(Path filePath) throws IOException {
-        if (Files.exists(filePath)) {
-            return Files.readAllBytes(filePath);
-        } else {
-            throw new FileNotFoundException(String.format("The '%s' file was not found!", filePath));
+
+    private static class ChannelWriterCompletionHandler implements CompletionHandler<Integer, FileHandler> {
+
+        private final byte[] buffer;
+
+        private ChannelWriterCompletionHandler(byte[] buffer) {
+            this.buffer = buffer;
+        }
+
+        @Override
+        public void completed(Integer result, FileHandler fileHandler) {
+            fileHandler.onFile(buffer);
+        }
+
+        @Override
+        public void failed(Throwable e, FileHandler fileHandler) {
+            fileHandler.onError(e);
+        }
+    }
+
+    public void getFile(Path filePath, FileHandler fileHandler) {
+        try {
+            AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(filePath);
+            byte[] buffer = new byte[(int) fileChannel.size()];
+            fileChannel.read(ByteBuffer.wrap(buffer), 0, fileHandler, new ChannelWriterCompletionHandler(buffer));
+        } catch (IOException e) {
+            fileHandler.onError(e);
         }
     }
 }
