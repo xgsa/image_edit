@@ -5,11 +5,12 @@ import org.apache.log4j.Logger;
 import org.imgedit.common.DirectoryScanner;
 import org.imgedit.common.ImageFileProcessor;
 import org.imgedit.common.ResizeImageInfo;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.*;
-import org.jboss.netty.handler.codec.http.*;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.multipart.*;
-import org.jboss.netty.util.CharsetUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.*;
-import static org.jboss.netty.handler.codec.http.HttpResponseStatus.*;
-import static org.jboss.netty.handler.codec.http.HttpVersion.*;
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static org.jboss.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 
 
 public class WebServerHandler extends SimpleChannelUpstreamHandler {
@@ -87,10 +87,10 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
                     response = getMainPage();
                 }
             } catch (ClientErrorException x) {
-                response = getErrorResponse(BAD_REQUEST, x.getMessage());
+                response = HttpResponseBuilder.make(BAD_REQUEST).withErrorContent(x.getMessage()).build();
                 LOG.warn("Client error: " + x.getMessage());
             } catch (Exception x) {
-                response = getErrorResponse(INTERNAL_SERVER_ERROR, x.getMessage());
+                response = HttpResponseBuilder.make(INTERNAL_SERVER_ERROR).withErrorContent(x).build();
                 LOG.error("Internal error: " + x.getMessage());
             }
             ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
@@ -141,7 +141,8 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
     }
 
     private HttpResponse uploadImage(HttpRequest request) throws HttpPostRequestDecoder.ErrorDataDecoderException,
-            HttpPostRequestDecoder.IncompatibleDataDecoderException {
+            HttpPostRequestDecoder.IncompatibleDataDecoderException,
+            HttpPostRequestDecoder.NotEnoughDataDecoderException, IOException, ClientErrorException {
         HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(factory, request);
         try {
             int width = readIntParameter(decoder, "width");
@@ -150,22 +151,10 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             LOG.info(String.format("Upload file %s (%sx%s)", imageFile.getFilename(), width, height));
             String imageFilePath = Paths.get(baseDirectory, imageFile.getFilename()).toString();
             imageFileProcessor.resizeImage(imageFile.getFile(), new ResizeImageInfo(width, height, imageFilePath));
-
-            String msg = String.format("The '%s' file was uploaded. Return to the <a href=\"/\">main page</a>",
-                    imageFile.getFilename());
-            HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-            response.headers().set(CONTENT_TYPE, "text/html");
-            response.setContent(ChannelBuffers.copiedBuffer(msg, CharsetUtil.UTF_8));
-            response.headers().set(CONTENT_LENGTH, response.getContent().readableBytes());
-            return response;
-        } catch (Exception e) {
-            String msg = String.format("Failed to upload the specified file: %s.<BR>Return to the <a href=\"/\">main page</a>",
-                    e.getMessage());
-            HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-            response.headers().set(CONTENT_TYPE, "text/html");
-            response.setContent(ChannelBuffers.copiedBuffer(msg, CharsetUtil.UTF_8));
-            response.headers().set(CONTENT_LENGTH, response.getContent().readableBytes());
-            return response;
+            return HttpResponseBuilder.makeOk()
+                .withHtml("The '%s' file was uploaded successfully. Return to the <a href=\"/\">main page</a>",
+                          imageFile.getFilename())
+                .build();
         } finally {
             decoder.cleanFiles();
         }
@@ -175,29 +164,20 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
         HttpResponse response;
         Path filePath = Paths.get(baseDirectory, uriStr);
         LOG.info(String.format("Access the '%s' image file", uriStr));
-        response = new DefaultHttpResponse(HTTP_1_1, OK);
-        // Actually, we don't know the content type, so don't help browser to detect it.
-        //response.headers().set(CONTENT_TYPE, "image/jpeg");
-        byte[] imageFile;
         try {
-            imageFile = fileAccessor.getFile(filePath);
-            response.setContent(ChannelBuffers.copiedBuffer(imageFile));
-            response.headers().set(CONTENT_LENGTH, response.getContent().readableBytes());
+            byte[] imageFile = fileAccessor.getFile(filePath);
+            // NOTE: The content type is unknown, so don't set the "Content-Type" header.
+            response = HttpResponseBuilder.makeOk().withContent(imageFile).build();
         } catch (IOException e) {
-            response = getErrorResponse(NOT_FOUND, String.format("Unable to access file '%s'", uriStr));
+            response = HttpResponseBuilder
+                .make(HttpResponseStatus.NOT_FOUND)
+                .withErrorContent(String.format("Unable to access file '%s'", uriStr))
+                .build();
         }
         return response;
     }
 
     private HttpResponse getMainPage() throws IOException {
-        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
-        response.headers().set(CONTENT_TYPE, "text/html");
-        response.setContent(ChannelBuffers.copiedBuffer(generateMainPage()));
-        response.headers().set(CONTENT_LENGTH, response.getContent().readableBytes());
-        return response;
-    }
-
-    private byte[] generateMainPage() throws IOException {
         final StringBuilder strBuf = new StringBuilder();
         directoryScanner.scan(new DirectoryScanner.FileListener() {
             @Override
@@ -208,33 +188,23 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             }
         });
 
-        byte[] mainPageFile = fileAccessor.getFile(Paths.get(MAIN_HTML_NAME));
+        byte[] mainPageFile = Files.readAllBytes(Paths.get(MAIN_HTML_NAME));
 
-        byte[] result;
+        byte[] mainPage;
         int placeholderIdx = Bytes.indexOf(mainPageFile, IMAGES_LIST_PLACE_HOLDER);
         if (placeholderIdx != -1) {
-            result = new byte[mainPageFile.length + strBuf.length()];
-            System.arraycopy(mainPageFile, 0, result, 0, placeholderIdx);
-            System.arraycopy(strBuf.toString().getBytes(), 0, result, placeholderIdx, strBuf.length());
-            System.arraycopy(mainPageFile, placeholderIdx, result, placeholderIdx + strBuf.length(),
+            mainPage = new byte[mainPageFile.length + strBuf.length()];
+            System.arraycopy(mainPageFile, 0, mainPage, 0, placeholderIdx);
+            System.arraycopy(strBuf.toString().getBytes(), 0, mainPage, placeholderIdx, strBuf.length());
+            System.arraycopy(mainPageFile, placeholderIdx, mainPage, placeholderIdx + strBuf.length(),
                     mainPageFile.length - placeholderIdx);
         } else {
             // Just do not substitute
-            result = mainPageFile;
+            mainPage = mainPageFile;
             LOG.warn(String.format("The '%s' file does not contain the '%s' place holder. Images list " +
                     "will not be substituted", MAIN_HTML_NAME, new String(IMAGES_LIST_PLACE_HOLDER, "UTF-8")));
         }
-
-        return result;
-    }
-
-    private HttpResponse getErrorResponse(HttpResponseStatus status, String details) {
-        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, status);
-        response.headers().set(CONTENT_TYPE, "text/plain; charset=UTF-8");
-        response.setContent(ChannelBuffers.copiedBuffer(
-                String.format("Failure: %s\r\nDetails: %s\r\n", status.toString(), details),
-                CharsetUtil.UTF_8));
-        return response;
+        return HttpResponseBuilder.makeOk().withHtml(mainPage).build();
     }
 
     @Override
