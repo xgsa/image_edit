@@ -1,6 +1,7 @@
 package org.imgedit.webservice;
 
 import com.google.common.primitives.Bytes;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.imgedit.common.DirectoryScanner;
 import org.imgedit.common.ImageFileProcessor;
@@ -30,7 +31,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
 
-    private static final String MAIN_HTML_NAME = "./index.html";
+    private static final String MAIN_HTML_NAME = "/WEB-INF/index.html";
     private static final byte[] IMAGES_LIST_PLACE_HOLDER = "<!--ImagesListPlaceHolder-->".getBytes();
 
     private static final String IMAGE_URI_PATH = "/image";
@@ -71,7 +72,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private void loadMainPageContent() {
         try {
-            mainPageFile = Files.readAllBytes(Paths.get(MAIN_HTML_NAME));
+            mainPageFile = IOUtils.toByteArray(getClass().getResourceAsStream(MAIN_HTML_NAME));
             mainPagePlaceHolderIndex = Bytes.indexOf(mainPageFile, IMAGES_LIST_PLACE_HOLDER);
             if (mainPagePlaceHolderIndex == -1) {
                 LOG.warn(String.format("The '%s' file does not contain the '%s' place holder. Images list " +
