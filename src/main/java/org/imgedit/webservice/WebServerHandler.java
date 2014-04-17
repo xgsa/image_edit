@@ -211,7 +211,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private HttpResponse getMainPage() throws IOException {
         final StringBuilder strBuf = new StringBuilder();
-        directoryScanner.scan(new DirectoryScanner.FileListener() {
+        directoryScanner.scan(new DirectoryScanner.DefaultFileListener() {
             @Override
             public void onFile(File file) {
                 if (file.canRead()) {

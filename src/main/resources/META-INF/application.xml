@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="directoryScanner" class="org.imgedit.common.DirectoryScanner">
+        <!-- NOTE: directory_to_scan is expected to be set by command line handler -->
+        <property name="directoryPath" value="#{systemProperties[directory_to_scan]}"/>
+        <property name="extensions">
+            <array>
+                <value>jpg</value>
+                <value>png</value>
+            </array>
+        </property>
+    </bean>
+
+    <bean id="imageStreamProcessor" class="org.imgedit.common.ImageStreamProcessor"/>
+
+    <bean id="imageFileProcessor" class="org.imgedit.common.ImageFileProcessor">
+        <constructor-arg ref="imageStreamProcessor"/>
+    </bean>
+
+    <bean id="executorService" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+        <constructor-arg value="#{T(Runtime).getRuntime().availableProcessors()}"/>
+    </bean>
+
+    <bean id="imageFilesProcessingListener" class="org.imgedit.application.ImageFilesProcessingListener">
+        <constructor-arg ref="imageFileProcessor"/>
+        <property name="resultWidth" value="100"/>
+        <property name="resultHeight" value="100"/>
+        <property name="resultFilenamePattern" value="scaled_%s"/>
+    </bean>
+
+    <bean id="parallelFileProcessor" class="org.imgedit.common.ParallelFileProcessor">
+        <constructor-arg ref="executorService"/>
+        <constructor-arg ref="imageFilesProcessingListener"/>
+        <property name="timeoutValue" value="1"/>
+        <property name="timeoutUnits" value="HOURS"/>
+    </bean>
+
+    <bean id="directoryScanRunner" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="directoryScanner"/>
+        <property name="targetMethod" value="scan"/>
+        <property name="arguments">
+            <list>
+                <ref local="parallelFileProcessor"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
