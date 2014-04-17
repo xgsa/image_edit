@@ -3,6 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="META-INF/application.properties"/>
+    </bean>
+
     <bean id="directoryScanner" class="org.imgedit.common.DirectoryScanner">
         <!-- NOTE: directory_to_scan is expected to be set by command line handler -->
         <property name="directoryPath" value="#{systemProperties[directory_to_scan]}"/>
@@ -21,21 +25,21 @@
     </bean>
 
     <bean id="executorService" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
-        <constructor-arg value="#{T(Runtime).getRuntime().availableProcessors()}"/>
+        <constructor-arg value="${processor.jobs}"/>
     </bean>
 
     <bean id="imageFilesProcessingListener" class="org.imgedit.application.ImageFilesProcessingListener">
         <constructor-arg ref="imageFileProcessor"/>
-        <property name="resultWidth" value="100"/>
-        <property name="resultHeight" value="100"/>
-        <property name="resultFilenamePattern" value="scaled_%s"/>
+        <property name="resultWidth" value="${image.resultWidth}"/>
+        <property name="resultHeight" value="${image.resultHeight}"/>
+        <property name="resultFilenamePattern" value="${image.resultFilenamePattern}"/>
     </bean>
 
     <bean id="parallelFileProcessor" class="org.imgedit.common.ParallelFileProcessor">
         <constructor-arg ref="executorService"/>
         <constructor-arg ref="imageFilesProcessingListener"/>
-        <property name="timeoutValue" value="1"/>
-        <property name="timeoutUnits" value="HOURS"/>
+        <property name="timeoutValue" value="${processor.timeoutValue}"/>
+        <property name="timeoutUnits" value="${processor.timeoutUnits}"/>
     </bean>
 
     <bean id="directoryScanRunner" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
