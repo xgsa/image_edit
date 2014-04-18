@@ -1,5 +1,8 @@
 package org.imgedit.common;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -11,6 +14,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 
+
+@Service
+@Qualifier("annotated")
 public class ImageStreamProcessor {
 
     private BufferedImage toBufferedImage(Image src) {

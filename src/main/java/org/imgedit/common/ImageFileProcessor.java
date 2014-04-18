@@ -2,11 +2,15 @@ package org.imgedit.common;
 
 import org.apache.log4j.Logger;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
+
+@Service
+@Qualifier("annotated")
 public class ImageFileProcessor {
 
     public static interface FileChangeListener {
@@ -16,14 +20,13 @@ public class ImageFileProcessor {
 
     private static final Logger LOG = Logger.getLogger(ImageFileProcessor.class);
 
-    private final ImageStreamProcessor imageStreamProcessor;
+    @Autowired
+    @Qualifier("annotated")
+    private final ImageStreamProcessor imageStreamProcessor = null;
 
-    private final List<FileChangeListener> fileChangeListeners = new ArrayList<>();
+    @Autowired
+    private final FileChangeListener[] fileChangeListeners = null;
 
-
-    public ImageFileProcessor(ImageStreamProcessor imageStreamProcessor) {
-        this.imageStreamProcessor = imageStreamProcessor;
-    }
 
     public void resizeImage(File imageFile, ResizeImageInfo imageInfo) {
         String imageFileName = imageFile.getName();
@@ -41,10 +44,6 @@ public class ImageFileProcessor {
             IOUtils.closeQuietly(outImageStream);
             notifyFileChangeListeners(imageInfo.getName());
         }
-    }
-
-    public void addFileChangeListener(FileChangeListener listener) {
-        fileChangeListeners.add(listener);
     }
 
     private void notifyFileChangeListeners(String filePath) {

@@ -3,20 +3,25 @@ package org.imgedit.webservice;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 
 
+@Service
+@Qualifier("cached")
 public class CachedFileAccessor implements FileAccessor {
 
     private static final Logger LOG = Logger.getLogger(CachedFileAccessor.class);
 
-    private final FileAccessor originalFileAccessor;
+    @Autowired
+    @Qualifier("simple")
+    private final FileAccessor originalFileAccessor = null;
+
     private final Cache<Path, byte[]> cache = CacheBuilder.newBuilder().maximumSize(10).build();
 
-    public CachedFileAccessor(FileAccessor originalFileAccessor) {
-        this.originalFileAccessor = originalFileAccessor;
-    }
 
     public void getFile(final Path filePath, final FileHandler fileHandler) {
         final byte[] fileContent = cache.getIfPresent(filePath);

@@ -12,7 +12,13 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.multipart.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -27,6 +33,8 @@ import static org.jboss.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 
 
+@Service
+@DependsOn("cli")
 public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
@@ -42,10 +50,18 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private static final String[] EXTENSIONS_TO_SCAN = new String[]{"jpg", "png"};
 
-    private final ImageFileProcessor imageFileProcessor;
-    private final String baseDirectory;
-    private final DirectoryScanner directoryScanner;
-    private final FileAccessor fileAccessor;
+    @Autowired
+    @Qualifier("annotated")
+    private final ImageFileProcessor imageFileProcessor = null;
+
+    @Autowired
+    @Qualifier("cached")
+    private final FileAccessor fileAccessor = null;
+
+    @Value("#{cli.baseDirectory}")
+    private final String baseDirectory = null;
+
+    private DirectoryScanner directoryScanner;
 
     private byte[] mainPageFile;
     private int mainPagePlaceHolderIndex = -1;
@@ -53,10 +69,8 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
     private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
 
 
-    public WebServerHandler(ImageFileProcessor imageFileProcessor, FileAccessor fileAccessor, String baseDirectory) {
-        this.imageFileProcessor = imageFileProcessor;
-        this.fileAccessor = fileAccessor;
-        this.baseDirectory = baseDirectory;
+    @PostConstruct
+    private void initialize() {
         directoryScanner = new DirectoryScanner(baseDirectory, EXTENSIONS_TO_SCAN);
         ensureBaseDirectoryExists(baseDirectory);
         loadMainPageContent();

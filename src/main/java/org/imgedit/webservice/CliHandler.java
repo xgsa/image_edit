@@ -2,8 +2,13 @@ package org.imgedit.webservice;
 
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 
+@Service("cli")
 public class CliHandler {
 
     private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
@@ -14,9 +19,13 @@ public class CliHandler {
     private final static String BASE_DIRECTORY_DEFAULT = "./";
     private final static int PORT_DEFAULT = 8080;
 
+    @Autowired
+    private final ArgumentsStorage argumentsStorage = null;
+
     private final Options options;
     private final CommandLineParser parser;
     private CommandLine line;
+    private boolean parsedSuccessfully;
 
 
     @SuppressWarnings("AccessStaticViaInstance")
@@ -38,19 +47,19 @@ public class CliHandler {
         parser = new PosixParser();
     }
 
-    public boolean run(String[] args) {
-        line = null;
+    @PostConstruct
+    public void run() {
         try {
-            line = parser.parse(options, args);
+            line = parser.parse(options, argumentsStorage.getAll());
         } catch (ParseException e) {
             System.err.println(e.getMessage());
         }
         if (line == null || line.hasOption("help")) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("web server", "The following options are supported", options, "Enjoy!");
-            return false;
+        } else {
+            parsedSuccessfully = true;
         }
-        return true;
     }
 
     public String getBaseDirectory() {
@@ -77,5 +86,9 @@ public class CliHandler {
 
     private String getStringOption(String optionName, String defaultValue) {
         return line.hasOption(optionName) ? line.getOptionValue(optionName) : defaultValue;
+    }
+
+    public boolean isParsedSuccessfully() {
+        return parsedSuccessfully;
     }
 }

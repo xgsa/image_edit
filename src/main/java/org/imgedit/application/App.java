@@ -2,8 +2,6 @@ package org.imgedit.application;
 
 import org.apache.log4j.Logger;
 import org.imgedit.common.Env;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class App extends Env {
 
@@ -23,16 +21,10 @@ public class App extends Env {
         }
     }
 
-    private static void run() {
-        AbstractApplicationContext ac = new FileSystemXmlApplicationContext(SPRING_CONFIGURATION_FILE);
-        // As documentation recommends, finalize Spring IoC container gracefully
-        ac.registerShutdownHook();
-    }
-
     public static void main(String[] args) {
         configureLogging();
         if (processCommandLineArguments(args)) {
-            run();
+            runSpring(SPRING_CONFIGURATION_FILE);
         }
     }
 
