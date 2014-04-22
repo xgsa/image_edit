@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -39,17 +40,20 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
 
-    private static final String MAIN_HTML_NAME = "/WEB-INF/index.html";
-    private static final byte[] IMAGES_LIST_PLACE_HOLDER = "<!--ImagesListPlaceHolder-->".getBytes();
+    @Value("${mainpage.resource}")
+    private Resource mainPageResource;
+
+    @Value("${mainpage.placeholder}")
+    private byte[] IMAGES_LIST_PLACE_HOLDER;
+
+    @Value("${mainpage.itempattern}")
+    private String IMAGE_ITEM_PATTERN;
 
     @Value("${uri.imageget}")
     private String IMAGE_URI_PATH = "/image";
 
     @Value("${uri.imageupload}")
     private String UPLOAD_URI_PATH = "/upload";
-
-    private static final String IMAGE_ITEM_PATTERN = "<a href=\"/image/%s\">" +
-            "<img src=\"/image/%s\" width=\"30\" height=\"30\"> %s</a><BR>";
 
     private static final String[] EXTENSIONS_TO_SCAN = new String[]{"jpg", "png"};
 
@@ -66,7 +70,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private DirectoryScanner directoryScanner;
 
-    private byte[] mainPageFile;
+    private byte[] cachedMainPage;
     private int mainPagePlaceHolderIndex = -1;
 
     private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
@@ -89,16 +93,17 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     private void loadMainPageContent() {
         try {
-            mainPageFile = IOUtils.toByteArray(getClass().getResourceAsStream(MAIN_HTML_NAME));
-            mainPagePlaceHolderIndex = Bytes.indexOf(mainPageFile, IMAGES_LIST_PLACE_HOLDER);
+            cachedMainPage = IOUtils.toByteArray(mainPageResource.getInputStream());
+            mainPagePlaceHolderIndex = Bytes.indexOf(cachedMainPage, IMAGES_LIST_PLACE_HOLDER);
             if (mainPagePlaceHolderIndex == -1) {
-                LOG.warn(String.format("The '%s' file does not contain the '%s' place holder. Images list " +
-                        "will not be substituted", MAIN_HTML_NAME, new String(IMAGES_LIST_PLACE_HOLDER, "UTF-8")));
+                LOG.warn(String.format("The %s does not contain the '%s' place holder. Images list " +
+                        "will not be substituted", mainPageResource.getDescription(),
+                        new String(IMAGES_LIST_PLACE_HOLDER, "UTF-8")));
             }
         } catch (IOException e) {
-            String msg = String.format("Unable to load the '%s' main page file.", MAIN_HTML_NAME);
+            String msg = String.format("Unable to load the %s.", mainPageResource.getDescription());
             LOG.error(msg);
-            mainPageFile = msg.getBytes();
+            cachedMainPage = msg.getBytes();
         }
     }
 
@@ -237,13 +242,13 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             }
         });
 
-        byte[] mainPage = mainPageFile;
+        byte[] mainPage = cachedMainPage;
         if (mainPagePlaceHolderIndex != -1) {
-            mainPage = new byte[mainPageFile.length + strBuf.length()];
-            System.arraycopy(mainPageFile, 0, mainPage, 0, mainPagePlaceHolderIndex);
+            mainPage = new byte[cachedMainPage.length + strBuf.length()];
+            System.arraycopy(cachedMainPage, 0, mainPage, 0, mainPagePlaceHolderIndex);
             System.arraycopy(strBuf.toString().getBytes(), 0, mainPage, mainPagePlaceHolderIndex, strBuf.length());
-            System.arraycopy(mainPageFile, mainPagePlaceHolderIndex, mainPage, mainPagePlaceHolderIndex + strBuf.length(),
-                    mainPageFile.length - mainPagePlaceHolderIndex);
+            System.arraycopy(cachedMainPage, mainPagePlaceHolderIndex, mainPage, mainPagePlaceHolderIndex + strBuf.length(),
+                    cachedMainPage.length - mainPagePlaceHolderIndex);
         }
         return HttpResponseBuilder.makeOk().withHtml(mainPage).build();
     }
