@@ -3,6 +3,7 @@ package org.imgedit.webservice;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -16,8 +17,11 @@ public class CliHandler {
     private final static String BASE_DIRECTORY = "base-directory";
     private final static String PORT = "port";
 
-    private final static String BASE_DIRECTORY_DEFAULT = "./";
-    private final static int PORT_DEFAULT = 8080;
+    @Value("${default.directory}")
+    private String BASE_DIRECTORY_DEFAULT = "./";
+
+    @Value("${default.port}")
+    private int PORT_DEFAULT = 8080;
 
     @Autowired
     private final ArgumentsStorage argumentsStorage = null;

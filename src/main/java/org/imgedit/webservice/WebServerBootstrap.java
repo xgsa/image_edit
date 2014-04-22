@@ -26,6 +26,7 @@ import org.jboss.netty.handler.codec.http.HttpContentCompressor;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +39,8 @@ public class WebServerBootstrap {
 
     private static final Logger LOG = Logger.getLogger(WebServerBootstrap.class);
 
-    private static final int MAX_FRAME_SIZE = 10*1024*1024;  // 10 Mb seems quite enough
+    @Value("${network.maxframesize}")
+    private int MAX_FRAME_SIZE = 10*1024*1024;  // 10 Mb seems quite enough
 
     @Autowired
     private final WebServerHandler webServerHandler = null;

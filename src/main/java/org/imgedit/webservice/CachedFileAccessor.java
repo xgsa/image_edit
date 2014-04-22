@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -20,7 +21,10 @@ public class CachedFileAccessor implements FileAccessor {
     @Qualifier("simple")
     private final FileAccessor originalFileAccessor = null;
 
-    private final Cache<Path, byte[]> cache = CacheBuilder.newBuilder().maximumSize(10).build();
+    @Value("${cache.size}")
+    private long cacheSize = 10;
+
+    private final Cache<Path, byte[]> cache = CacheBuilder.newBuilder().maximumSize(cacheSize).build();
 
 
     public void getFile(final Path filePath, final FileHandler fileHandler) {

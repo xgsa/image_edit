@@ -42,8 +42,11 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
     private static final String MAIN_HTML_NAME = "/WEB-INF/index.html";
     private static final byte[] IMAGES_LIST_PLACE_HOLDER = "<!--ImagesListPlaceHolder-->".getBytes();
 
-    private static final String IMAGE_URI_PATH = "/image";
-    private static final String UPLOAD_URI_PATH = "/upload";
+    @Value("${uri.imageget}")
+    private String IMAGE_URI_PATH = "/image";
+
+    @Value("${uri.imageupload}")
+    private String UPLOAD_URI_PATH = "/upload";
 
     private static final String IMAGE_ITEM_PATTERN = "<a href=\"/image/%s\">" +
             "<img src=\"/image/%s\" width=\"30\" height=\"30\"> %s</a><BR>";
