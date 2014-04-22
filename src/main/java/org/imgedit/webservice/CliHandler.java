@@ -24,7 +24,7 @@ public class CliHandler {
     private int PORT_DEFAULT = 8080;
 
     @Autowired
-    private final ArgumentsStorage argumentsStorage = null;
+    private ArgumentsStorage argumentsStorage;
 
     private final Options options;
     private final CommandLineParser parser;

@@ -55,14 +55,14 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
     @Autowired
     @Qualifier("annotated")
-    private final ImageFileProcessor imageFileProcessor = null;
+    private ImageFileProcessor imageFileProcessor;
 
     @Autowired
     @Qualifier("cached")
-    private final FileAccessor fileAccessor = null;
+    private FileAccessor fileAccessor;
 
     @Value("#{cli.baseDirectory}")
-    private final String baseDirectory = null;
+    private String baseDirectory;
 
     private DirectoryScanner directoryScanner;
 

@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 class ImageFileChangeListener implements ImageFileProcessor.FileChangeListener {
 
     @Autowired
-    private final CachedFileAccessor cachedFileAccessor = null;
+    private CachedFileAccessor cachedFileAccessor;
 
 
     @Override

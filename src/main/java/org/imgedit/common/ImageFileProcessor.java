@@ -22,10 +22,10 @@ public class ImageFileProcessor {
 
     @Autowired
     @Qualifier("annotated")
-    private final ImageStreamProcessor imageStreamProcessor = null;
+    private ImageStreamProcessor imageStreamProcessor;
 
     @Autowired
-    private final FileChangeListener[] fileChangeListeners = null;
+    private FileChangeListener[] fileChangeListeners;
 
 
     public void resizeImage(File imageFile, ResizeImageInfo imageInfo) {

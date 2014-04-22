@@ -19,7 +19,7 @@ public class CachedFileAccessor implements FileAccessor {
 
     @Autowired
     @Qualifier("simple")
-    private final FileAccessor originalFileAccessor = null;
+    private FileAccessor originalFileAccessor;
 
     @Value("${cache.size}")
     private long cacheSize = 10;

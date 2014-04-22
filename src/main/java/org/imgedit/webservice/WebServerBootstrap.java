@@ -43,10 +43,10 @@ public class WebServerBootstrap {
     private int MAX_FRAME_SIZE = 10*1024*1024;  // 10 Mb seems quite enough
 
     @Autowired
-    private final WebServerHandler webServerHandler = null;
+    private WebServerHandler webServerHandler;
 
     @Autowired
-    private final CliHandler cliHandler = null;
+    private CliHandler cliHandler;
 
 
     @PostConstruct
