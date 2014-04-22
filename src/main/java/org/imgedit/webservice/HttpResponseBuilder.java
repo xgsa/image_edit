@@ -41,7 +41,7 @@ public class HttpResponseBuilder {
     }
 
     private HttpResponseBuilder withHtmlContent(ChannelBuffer content) {
-        result.headers().set(CONTENT_TYPE, "text/html");
+        result.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
         return withContent(content);
     }
 
