@@ -17,6 +17,7 @@ package org.imgedit.webservice;
 
 import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
@@ -26,6 +27,7 @@ import org.jboss.netty.handler.codec.http.HttpContentCompressor;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +45,8 @@ public class WebServerBootstrap {
     private int MAX_FRAME_SIZE = 10*1024*1024;  // 10 Mb seems quite enough
 
     @Autowired
-    private WebServerHandler webServerHandler;
+    @Qualifier("webServerHandler")
+    private ChannelHandler webServerHandler;
 
     @Autowired
     private CliHandler cliHandler;

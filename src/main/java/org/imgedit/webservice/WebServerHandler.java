@@ -34,7 +34,7 @@ import static org.jboss.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static org.jboss.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
 
 
-@Service
+@Service("webServerHandler")
 @DependsOn("cli")
 public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
@@ -105,6 +105,12 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
             LOG.error(msg);
             cachedMainPage = msg.getBytes();
         }
+    }
+
+    @Override
+    @MeasureStatistics
+    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+        super.handleUpstream(ctx, e);
     }
 
     @Override
