@@ -28,6 +28,12 @@ public class ImageFileProcessor {
     private FileChangeListener[] fileChangeListeners;
 
 
+    public ImageFileProcessor() {}
+
+    public ImageFileProcessor(ImageStreamProcessor imageStreamProcessor) {
+        this.imageStreamProcessor = imageStreamProcessor;
+    }
+
     public void resizeImage(File imageFile, ResizeImageInfo imageInfo) {
         String imageFileName = imageFile.getName();
         LOG.info(String.format("Processing image '%s'...", imageFileName));
