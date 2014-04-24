@@ -72,6 +72,12 @@
                 <artifactId>aspectjweaver</artifactId>
                 <version>1.6.11</version>
             </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -109,7 +115,7 @@
 
     <modules>
         <module>image_service</module>
-        <!--<module>servlet</module>-->
+        <module>servlet</module>
     </modules>
 
 </project>
