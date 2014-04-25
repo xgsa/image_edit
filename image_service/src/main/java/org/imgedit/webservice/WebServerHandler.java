@@ -38,7 +38,7 @@ import static org.jboss.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SER
 @DependsOn("cli")
 public class WebServerHandler extends SimpleChannelUpstreamHandler {
 
-    private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
+    private static final Logger LOG = Logger.getLogger(WebServerHandler.class);
 
     @Value("${mainpage.resource}")
     private Resource mainPageResource;
@@ -145,7 +145,7 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
                 LOG.warn("Client error: " + x.getMessage());
             } catch (Exception x) {
                 response = HttpResponseBuilder.make(INTERNAL_SERVER_ERROR).withErrorContent(x).build();
-                LOG.error("Internal error: " + x.getMessage());
+                LOG.error("Unknown internal error", x);
             }
             if (response != null) {
                 writeResponse(channel, response, keepAlive);

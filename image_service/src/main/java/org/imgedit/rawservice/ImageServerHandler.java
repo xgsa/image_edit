@@ -1,5 +1,6 @@
 package org.imgedit.rawservice;
 
+import org.apache.log4j.Logger;
 import org.imgedit.common.ImageStreamProcessor;
 import org.imgedit.common.ResizeImageInfo;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -13,14 +14,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
-
 import static org.jboss.netty.buffer.ChannelBuffers.copiedBuffer;
 
 
 public class ImageServerHandler extends SimpleChannelUpstreamHandler {
 
-    private static final Logger LOG = Logger.getLogger(ImageServerHandler.class.getName());
+    private static final Logger LOG = Logger.getLogger(ImageServerHandler.class);
 
     private final ImageStreamProcessor imageStreamProcessor;
 

@@ -8,7 +8,7 @@ import java.io.FilenameFilter;
 
 public class DirectoryScanner {
 
-    private static final Logger LOG = Logger.getLogger(DirectoryScanner.class.getName());
+    private static final Logger LOG = Logger.getLogger(DirectoryScanner.class);
 
     private String directoryPath = ".";
     private String[] extensions;

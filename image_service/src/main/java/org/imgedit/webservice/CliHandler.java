@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 @Service("cli")
 public class CliHandler {
 
-    private static final Logger LOG = Logger.getLogger(WebServerHandler.class.getName());
+    private static final Logger LOG = Logger.getLogger(WebServerHandler.class);
 
     private final static String BASE_DIRECTORY = "base-directory";
     private final static String PORT = "port";
