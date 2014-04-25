@@ -7,7 +7,7 @@
 
     <servlet>
         <servlet-name>loginPage</servlet-name>
-        <servlet-class>org.imgedit.servlet.LoginServlet</servlet-class>
+        <servlet-class>org.coolshop.servlet.LoginServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>loginPage</servlet-name>

@@ -16,7 +16,7 @@
 
     <modules>
         <module>image_service</module>
-        <module>servlet</module>
+        <module>cool_shop</module>
     </modules>
 
     <dependencyManagement>
