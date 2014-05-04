@@ -13,14 +13,12 @@ public class LoginServlet extends HttpServlet {
     private static final String PARAMETER_LOGIN = "login";
     private static final String PARAMETER_PASSWORD = "password";
 
-    private static final String LOGIN_OK = "Login successfully";
-    private static final String LOGIN_FAILED = "Login failed, <a href=\"/\">retry</a>";
-    private static final String LOGIN_PAGE_TEMPLATE =
+    private static final String LOGIN_FAILED =
             "<html>\n" +
-            "<body>\n" +
-            "<h2>%s</h2>\n" +
-            "</body>\n" +
-            "</html>";
+                    "<body>\n" +
+            "<h2>Login failed, <a href=\"/\">retry</a></h2>\n" +
+                    "</body>\n" +
+                    "</html>";
 
     private Map<String, String> LOGINS_DATA = new HashMap<String, String>() {
         {
@@ -38,8 +36,11 @@ public class LoginServlet extends HttpServlet {
         String login = request.getParameter(PARAMETER_LOGIN);
         String password = request.getParameter(PARAMETER_PASSWORD);
         if (login != null && password != null) {
-            String loginMsg = acceptLoginPair(login, password) ? LOGIN_OK : LOGIN_FAILED;
-            response.getWriter().write(String.format(LOGIN_PAGE_TEMPLATE, loginMsg));
+            if (acceptLoginPair(login, password)) {
+                response.sendRedirect("/list_products.jsp");
+            } else {
+                response.getWriter().write(LOGIN_FAILED);
+            }
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("\"login\" or \"password\" POST-parameter is absent.");
