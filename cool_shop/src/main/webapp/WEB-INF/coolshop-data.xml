@@ -11,7 +11,11 @@
         <property name="password" value="111"/>
     </bean>
 
-    <bean id="spitterDao" class="org.coolshop.dao.ProductDao">
+    <bean id="productDao" class="org.coolshop.dao.ProductDao">
         <property name="dataSource" ref="dataSource" />
     </bean>
+    <bean id="userDao" class="org.coolshop.dao.UserDao">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
 </beans>

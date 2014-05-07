@@ -5,6 +5,15 @@
     <title>Login page</title>
 </head>
 <body>
+    <c:choose>
+        <c:when test="${user != null}">
+            Hello, ${user.fullName}
+        </c:when>
+        <c:otherwise>
+            You are not <a href="/user/login">logged in</a>.
+        </c:otherwise>
+    </c:choose>
+    <HR>
     <h1>Products list:</h1>
     <table>
         <tr>
