@@ -7,6 +7,10 @@
     <servlet>
         <servlet-name>coolshop</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/META-INF/coolshop-servlet.xml</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
@@ -20,7 +24,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            /WEB-INF/coolshop-data.xml
+            /META-INF/coolshop-data.xml
         </param-value>
     </context-param>
 
