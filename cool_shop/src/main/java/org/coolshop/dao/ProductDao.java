@@ -19,7 +19,7 @@ public class ProductDao extends JdbcDaoSupport {
                     public Upc mapRow(ResultSet rs, int rowNum)
                             throws SQLException {
                         // TODO: Implement products cache by id
-                        return new Upc(new Product(rs.getLong(1), rs.getString(2)), rs.getLong(3), rs.getLong(4));
+                        return new Upc(new Product(rs.getString(2)), rs.getLong(3), rs.getLong(4));
                     }
                 }
         );

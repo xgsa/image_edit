@@ -12,12 +12,13 @@ import java.sql.SQLException;
 public class UserDao extends JdbcDaoSupport {
 
     public void addUser(User user) {
-        int rows = getJdbcTemplate().update(
-                "INSERT INTO user (id, login, password, full_name) VALUES (?, ?, ?, ?)",
-                user.getId(), user.getLogin(), user.getPassword(), user.getFullName());
-        if (rows != 1) {
-            throw new IllegalArgumentException("Unable to add "+user);
-        }
+        throw new UnsupportedOperationException();
+//        int rows = getJdbcTemplate().update(
+//                "INSERT INTO user (id, login, password, full_name) VALUES (?, ?, ?, ?)",
+//                user.getId(), user.getLogin(), user.getPassword(), user.getFullName());
+//        if (rows != 1) {
+//            throw new IllegalArgumentException("Unable to add "+user);
+//        }
     }
 
     public User getUser(String name) {
@@ -27,7 +28,7 @@ public class UserDao extends JdbcDaoSupport {
                     new ParameterizedRowMapper<User>() {
                         public User mapRow(ResultSet rs, int rowNum)
                                 throws SQLException {
-                            return new User(rs.getLong(1), rs.getString(2), rs.getBytes(3), rs.getString(4));
+                            return new User(rs.getString(2), rs.getBytes(3), rs.getString(4), User.Role.Admin);
                         }
                     },
                     name

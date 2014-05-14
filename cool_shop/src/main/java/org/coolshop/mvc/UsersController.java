@@ -53,7 +53,7 @@ public class UsersController {
     @RequestMapping(value = "/login", method = POST)
     public String processLogin(UserLoginRequest userLoginRequest, Model model, HttpSession session) {
         User user = userDao.getUser(userLoginRequest.getLogin());
-        if (user == null || !user.checkPassword(userLoginRequest.getPassword())) {
+        if (user == null || !user.equalsPassword(userLoginRequest.getPassword())) {
             userLoginRequest.setPassword("");
             model.addAttribute("user", userLoginRequest);
             model.addAttribute("error", "Incorrect login or password");
