@@ -1,15 +1,24 @@
 package org.coolshop.domain;
 
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 
+@Entity
 public class Store {
 
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
     private String address;
+
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Upc> upcs;
 
 

@@ -1,10 +1,12 @@
 package org.coolshop.domain;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 
+@Entity
 public class Order {
 
     public enum Status {
@@ -14,11 +16,25 @@ public class Order {
     }
 
 
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+    @Temporal(TemporalType.TIMESTAMP)
     private Date submittedAt;
+
+    @ManyToMany
     private Set<Upc> upcs;
 
 

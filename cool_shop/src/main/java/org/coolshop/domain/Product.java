@@ -1,13 +1,21 @@
 package org.coolshop.domain;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 
+@Entity
 public class Product {
 
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<AttributeValue> attributes;
 
 

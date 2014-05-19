@@ -15,7 +15,7 @@ public class ProductsController {
 
     @RequestMapping({"/"})
     public String listProducts(Model model) {
-        model.addAttribute("products", productDao.getUpcs());
+        model.addAttribute("products", productDao.getProducts());
         return "products";
     }
 }

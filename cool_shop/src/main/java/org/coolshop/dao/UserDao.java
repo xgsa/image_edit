@@ -1,40 +1,22 @@
 package org.coolshop.dao;
 
 import org.coolshop.domain.User;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
-public class UserDao extends JdbcDaoSupport {
+@Repository
+public class UserDao extends BaseDao<User> {
 
     public void addUser(User user) {
-        throw new UnsupportedOperationException();
-//        int rows = getJdbcTemplate().update(
-//                "INSERT INTO user (id, login, password, full_name) VALUES (?, ?, ?, ?)",
-//                user.getId(), user.getLogin(), user.getPassword(), user.getFullName());
-//        if (rows != 1) {
-//            throw new IllegalArgumentException("Unable to add "+user);
-//        }
+        getCurrentSession().save(user);
     }
 
-    public User getUser(String name) {
-        try {
-            return getJdbcTemplate().queryForObject(
-                    "SELECT id, login, password, full_name FROM user WHERE login=?",
-                    new ParameterizedRowMapper<User>() {
-                        public User mapRow(ResultSet rs, int rowNum)
-                                throws SQLException {
-                            return new User(rs.getString(2), rs.getBytes(3), rs.getString(4), User.Role.Admin);
-                        }
-                    },
-                    name
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+    @Transactional(readOnly = true)
+    public User getUser(String login) {
+        return (User) getCurrentSession()
+                .createQuery("from XUser as user where user.login = :login")
+                .setString("login", login)
+                .uniqueResult();
     }
 }

@@ -1,24 +1,35 @@
 package org.coolshop.domain;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 
+@Entity
 public class Upc {
 
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @Column(nullable = false)
     private Long price;
+
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
     private Product product;
+
+    @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<AttributeValue> attributes;
+
+    @ManyToMany
     private Set<Store> stores;
 
 
     // For hibernate, not intended to be used by the clients.
     protected Upc() {}
 
-    public Upc(Product product, Long id, Long price) {
+    public Upc(Product product, Long price) {
         this.product = product;
-        this.id = id;
         this.price = price;
         attributes = new HashSet<>();
         stores = new HashSet<>();

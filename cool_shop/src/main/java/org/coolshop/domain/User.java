@@ -1,11 +1,13 @@
 package org.coolshop.domain;
 
+import javax.persistence.*;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 
+@Entity
 public class User {
 
     public enum Role {
@@ -15,10 +17,20 @@ public class User {
         User,
     }
 
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @Column(unique = true, nullable = false)
     private String login;
+
+    @Column(length = 16, nullable = false)
     private byte[] password;
+
     private String fullName;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
 

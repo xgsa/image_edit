@@ -1,11 +1,18 @@
 package org.coolshop.domain;
 
+import javax.persistence.*;
 
 
+@Entity
 public class AttributeValue {
 
+    @Id
+    @GeneratedValue
     private Long id;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     private Attribute attribute;
+
     private String value;
 
 

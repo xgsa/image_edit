@@ -1,0 +1,17 @@
+#productPanel {
+    float:left;
+    width: 200px;
+    height: 200px;
+    background-color: #F0F0F0;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 7px;
+    text-align: center;
+}
+#productTitle {
+    font-weight: bold;
+}
+#productImage {
+    width: 130px;
+    height: 130px;
+}

@@ -1,27 +1,31 @@
 package org.coolshop.dao;
 
 import org.coolshop.domain.Product;
-import org.coolshop.domain.Upc;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 
-public class ProductDao extends JdbcDaoSupport {
+@Repository
+public class ProductDao extends BaseDao<Product> {
 
-    public List<Upc> getUpcs() {
-        return getJdbcTemplate().query(
-                "SELECT product.id, name, upc.id, price FROM upc INNER JOIN product ON upc.product_id=product.id",
-                new ParameterizedRowMapper<Upc>() {
-                    public Upc mapRow(ResultSet rs, int rowNum)
-                            throws SQLException {
-                        // TODO: Implement products cache by id
-                        return new Upc(new Product(rs.getString(2)), rs.getLong(3), rs.getLong(4));
-                    }
-                }
-        );
+    public ProductDao() {
+        super(Product.class);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Product> getProducts() {
+        return getCurrentSession()
+                .createQuery("from Product")
+                .list();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Upc> getProductUpcs(Long product_id) {
+        return getCurrentSession()
+                .createQuery("from Upc as upc where upc.product.id = :product_id")
+                .setLong("product_id", product_id)
+                .list();
     }
 }

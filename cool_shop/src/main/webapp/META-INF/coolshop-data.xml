@@ -17,11 +17,39 @@
         <property name="password" value="111"/>
     </bean>
 
-    <bean id="productDao" class="org.coolshop.dao.ProductDao">
-        <property name="dataSource" ref="dataSource" />
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="org.coolshop.domain"/>
+        <property name="hibernateProperties">
+            <props>
+                <!-- DB settings -->
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.id.new_generator_mappings">true</prop>
+
+                <!-- Configure DB schema creation/validation -->
+                <prop key="hibernate.hbm2ddl.auto">create</prop>
+
+                <!-- Configure debugging info -->
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.generate_statistics">true</prop>
+
+                <!-- Configure caching -->
+                <prop key="hibernate.c3p0.min_size">5</prop>
+                <prop key="hibernate.c3p0.max_size">20</prop>
+                <prop key="hibernate.c3p0.timeout">1800</prop>
+                <prop key="hibernate.c3p0.max_statements">50</prop>
+            </props>
+        </property>
     </bean>
-    <bean id="userDao" class="org.coolshop.dao.UserDao">
-        <property name="dataSource" ref="dataSource" />
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
+
+
+    <context:component-scan base-package="org.coolshop.dao"/>
 
 </beans>

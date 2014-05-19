@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Login page</title>
+    <link href="/resources/css/main.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
     <c:choose>
@@ -14,19 +15,17 @@
         </c:otherwise>
     </c:choose>
     <HR>
-    <h1>Products list:</h1>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Price</th>
-        </tr>
-        <c:forEach var="upc" items="${upcs}">
-            <tr>
-                <td><c:out value="${upc.product.name}"/></td>
-                <td><c:out value="${upc.price}"/></td>
-            </tr>
-        </c:forEach>
-    </table>
+    <c:forEach var="product" items="${products}">
+        <div id="productPanel">
+            <div id="productTitle"><c:out value="${product.name}"/></div>
+            <HR>
+            <%--<c:forEach var="attribute_value" items="${upc.attributes}">--%>
+                <%--<c:out value="${attribute_value.attribute.name}"/>=--%>
+                <%--<c:out value="${attribute_value.value}"/><BR>--%>
+            <%--</c:forEach>--%>
+            <img src="/resources/images/product.png" id="productImage"/>
+        </div>
+    </c:forEach>
 
 </body>
 </html>
