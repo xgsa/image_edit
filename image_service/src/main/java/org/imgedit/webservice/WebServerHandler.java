@@ -22,10 +22,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -154,17 +152,11 @@ public class WebServerHandler extends SimpleChannelUpstreamHandler {
     }
 
     private String getURIPath(String uriStr) throws ClientErrorException {
-        String decodedUriStr = uriStr;
-        try {
-            decodedUriStr = URLDecoder.decode(uriStr, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            LOG.warn(String.format("Unable to decode uri '%s', leave it as is", uriStr));
-        }
         URI uri;
         try {
-            uri = new URI(decodedUriStr);
+            uri = new URI(uriStr);
         } catch (URISyntaxException e1) {
-            String msg = String.format("Invalid URI '%s'.", decodedUriStr);
+            String msg = String.format("Invalid URI '%s'.", uriStr);
             throw new ClientErrorException(msg);
         }
         return uri.getPath();
