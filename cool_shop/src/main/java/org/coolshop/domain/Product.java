@@ -15,15 +15,18 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<AttributeValue> attributes;
+
+    private String imageReference;
 
 
     // For hibernate, not intended to be used by the clients.
     protected Product() {}
 
-    public Product(String name) {
+    public Product(String name, String imageReference) {
         this.name = name;
+        this.imageReference = imageReference;
         attributes = new HashSet<>();
     }
 
@@ -47,6 +50,14 @@ public class Product {
         this.attributes = attributes;
     }
 
+    public String getImageReference() {
+        return imageReference;
+    }
+
+    public void setImageReference(String imageReference) {
+        this.imageReference = imageReference;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,6 +67,8 @@ public class Product {
 
         if (attributes != null ? !attributes.equals(product.attributes) : product.attributes != null) return false;
         if (id != null ? !id.equals(product.id) : product.id != null) return false;
+        if (imageReference != null ? !imageReference.equals(product.imageReference) : product.imageReference != null)
+            return false;
         if (name != null ? !name.equals(product.name) : product.name != null) return false;
 
         return true;
@@ -66,6 +79,7 @@ public class Product {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+        result = 31 * result + (imageReference != null ? imageReference.hashCode() : 0);
         return result;
     }
 
@@ -74,6 +88,7 @@ public class Product {
         return "Product{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", imageReference='" + imageReference + '\'' +
                 ", attributes=" + attributes +
                 '}';
     }

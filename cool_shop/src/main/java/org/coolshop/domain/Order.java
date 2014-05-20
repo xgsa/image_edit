@@ -6,7 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-@Entity
+// NOTE: "order" is a keyword in some of DB engines.
+@Entity(name = "XOrder")
 public class Order {
 
     public enum Status {

@@ -7,7 +7,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 
-@Entity
+// NOTE: "user" is a keyword in some of DB engines.
+@Entity(name = "XUser")
 public class User {
 
     public enum Role {

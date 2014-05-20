@@ -1,0 +1,12 @@
+<%@ page contentType="text/html; charset=utf-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<c:forEach var="attribute_value" items="${attribute_values}">
+    <tr>
+        <td id="attributeName">
+            <c:out value="${attribute_value.attribute.name}"/>:
+        </td>
+        <td id="attributeValue">
+            <c:out value="${attribute_value.value}"/>
+        </td>
+    </tr>
+</c:forEach>

@@ -8,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class UserDao extends BaseDao<User> {
 
+    public UserDao() {
+        super(User.class);
+    }
+
     public void addUser(User user) {
         getCurrentSession().save(user);
     }

@@ -1,17 +1,43 @@
-#productPanel {
-    float:left;
-    width: 200px;
-    height: 200px;
+.panel {
     background-color: #F0F0F0;
     margin: 5px;
     padding: 5px;
     border-radius: 7px;
-    text-align: center;
+    border: 1px solid black;
 }
-#productTitle {
+.panelTitle {
     font-weight: bold;
 }
+
+#productPanel {
+    float:left;
+    width: 200px;
+    height: 200px;
+    text-align: center;
+}
 #productImage {
-    width: 130px;
-    height: 130px;
+    max-width: 100%;
+    max-height: 75%;
+}
+
+#productInfoTitle {
+    font-size-adjust: 1;
+    font-weight: bold;
+}
+#productInfoImage {
+    float: left;
+}
+#productAllUpcsPanel {
+    clear: left;
+    margin-top: 10px;
+}
+#productUpcPanel {
+    float: left;
+}
+
+#attributeName {
+    padding-right: 5px;
+}
+#attributeValue {
+    padding-left: 5px;
 }

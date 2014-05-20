@@ -1,6 +1,7 @@
 package org.coolshop.dao;
 
 import org.coolshop.domain.Product;
+import org.coolshop.domain.Upc;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

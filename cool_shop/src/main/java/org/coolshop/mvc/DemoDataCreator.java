@@ -71,7 +71,7 @@ public class DemoDataCreator {
         store = new Store("Mobilochka", "Kharkov, Lenina av. 77");
         session.save(store);
 
-        product = new Product("Sony Xperia Z2");
+        product = new Product("Sony Xperia Z2 D6502", "Sony Xperia Z2 D6502.png");
         product.getAttributes().add(new AttributeValue(mark, "LG"));
         upc = new Upc(product, (long) 99);
         upc.addStore(store);
@@ -85,7 +85,7 @@ public class DemoDataCreator {
         store = new Store("PC Shop", "Kharkov, Pravdy av. 42");
         session.save(store);
 
-        product = new Product("HP ProBook-5555");
+        product = new Product("HP ProBook 470 G1", "HP ProBook 470 G1.png");
         product.getAttributes().add(new AttributeValue(mark, "HP"));
         upc = new Upc(product, (long) 999);
         upc.addStore(store);
@@ -93,14 +93,14 @@ public class DemoDataCreator {
         session.save(upc);
         upcsToOrder.add(upc);
 
-        product = new Product("Samsung S22C200B");
+        product = new Product("Samsung S22C200B", "Samsung S22C200B.png");
         product.getAttributes().add(new AttributeValue(mark, "Samsung"));
         upc = new Upc(product, (long) 399);
         upc.addStore(store);
         session.save(upc);
         upcsToOrder.add(upc);
 
-        product = new Product("Logitech Gaming Mouse G300");
+        product = new Product("Logitech Gaming Mouse G300", "Logitech Gaming Mouse G300.png");
         product.getAttributes().add(new AttributeValue(mark, "Logitech"));
         upc = new Upc(product, (long) 29);
         upc.addStore(store);
