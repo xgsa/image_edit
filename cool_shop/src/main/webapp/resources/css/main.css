@@ -9,6 +9,24 @@
     font-weight: bold;
 }
 
+#pageHeader {
+}
+#logoImage {
+    /*float: left;*/
+    vertical-align: middle;
+}
+#shopTitle {
+    font-style: italic;
+    color: dodgerblue;
+}
+#headerDelimiter {
+    clear: both;
+}
+
+#loginPanel {
+    float: right;
+}
+
 #productPanel {
     float:left;
     width: 200px;

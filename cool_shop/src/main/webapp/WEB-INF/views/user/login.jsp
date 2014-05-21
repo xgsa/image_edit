@@ -5,6 +5,7 @@
 <html>
 <head>
     <title>Login page</title>
+    <link href="/resources/css/main.css" rel="stylesheet" type="text/css"/>
     <style>
         #outer {
             display: table;
@@ -38,33 +39,31 @@
 
 <div id="outer">
     <div id="middle">
-        <div id="inner">
+        <div id="inner" class="panel">
             <form:form method="POST" modelAttribute="user">
-                <fieldset>
-                    <legend>Sign in</legend>
-                    <table class="wide">
-                        <c:if test="${error != null}">
-                            <tr>
-                                <td colspan="2">
-                                    <span class="error">${error}</span>
-                                </td>
-                            </tr>
-                        </c:if>
+                <div class="panelTitle">Sign in</div>
+                <table class="wide">
+                    <c:if test="${error != null}">
                         <tr>
-                            <td><label for="user_login">Login:</label></td>
-                            <td><form:input path="login" id="user_login" cssClass="wide"/></td>
-                        </tr>
-                        <tr>
-                            <td><label for="user_password">Passord:</label></td>
-                            <td><form:password path="password" id="user_password" cssClass="wide"/></td>
-                        </tr>
-                        <tr align="center">
                             <td colspan="2">
-                                <input type="submit" value="Go-go-go!">
+                                <span class="error">${error}</span>
                             </td>
                         </tr>
-                    </table>
-                </fieldset>
+                    </c:if>
+                    <tr>
+                        <td><label for="user_login">Login:</label></td>
+                        <td><form:input path="login" id="user_login" cssClass="wide"/></td>
+                    </tr>
+                    <tr>
+                        <td><label for="user_password">Passord:</label></td>
+                        <td><form:password path="password" id="user_password" cssClass="wide"/></td>
+                    </tr>
+                    <tr align="center">
+                        <td colspan="2">
+                            <input type="submit" value="Go-go-go!">
+                        </td>
+                    </tr>
+                </table>
             </form:form>
         </div>
     </div>
