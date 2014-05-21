@@ -18,32 +18,40 @@
                 </td>
                 <td width="10px"></td>
                 <td>
+                    <c:if test="${fn:length(upcs) == 1}" >
+                        <c:set var="upc" value="${upcs[0]}" />
+                    </c:if>
                     <div class="panelTitle">Product details:</div>
                     <table>
                         <c:set var="attribute_values" value="${product.attributes}" />
                         <%@ include file="attributes_list.jspf" %>
-                        <c:if test="${fn:length(upcs) == 1}" >
+                        <c:if test="${upc != null}" >
                             <c:set var="attribute_values" value="${upcs[0].attributes}" />
                             <%@ include file="attributes_list.jspf" %>
                         </c:if>
                     </table>
+                    <c:if test="${upc != null}" >
+                        <div class="panel">Price: <c:out value="${upc.price}"/></div>
+                    </c:if>
                 </td>
             </tr>
         </table>
 
         <c:if test="${fn:length(upcs) > 1}" >
-            <div id="productAllUpcsPanel">
-                <div class="panelTitle">Available modifications:</div>
-                <c:forEach var="upc" items="${upcs}">
-                    <div class="panel" id="productUpcPanel">
-                        <div class="panelTitle">Modifications details:</div>
-                        <table>
-                            <c:set var="attribute_values" value="${upc.attributes}" />
-                            <%@ include file="attributes_list.jspf" %>
-                        </table>
-                    </div>
-                </c:forEach>
-            </div>
+                <div id="productAllUpcsPanel">
+                    <div class="panelTitle">Available modifications:</div>
+                    <c:forEach var="upc" items="${upcs}">
+                        <div class="panel" id="productUpcPanel">
+                            <div class="panelTitle">Modifications details:</div>
+                            <table>
+                                <c:set var="attribute_values" value="${upc.attributes}" />
+                                <%@ include file="attributes_list.jspf" %>
+                            </table>
+                            <HR>
+                            Price: <c:out value="${upc.price}"/>
+                        </div>
+                    </c:forEach>
+                </div>
         </c:if>
     </jsp:body>
 </t:genericpage>
