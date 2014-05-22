@@ -65,4 +65,10 @@ public class UsersController {
             return "redirect:/";
         }
     }
+
+    @RequestMapping(value = "/logout")
+    public String processLogin(Model model, HttpSession session) {
+        session.removeAttribute("user");
+        return "redirect:/";
+    }
 }
