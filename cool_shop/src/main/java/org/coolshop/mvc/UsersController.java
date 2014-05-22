@@ -4,7 +4,6 @@ import org.coolshop.domain.User;
 import org.coolshop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -52,7 +51,6 @@ public class UsersController {
     }
 
     @RequestMapping(value = "/login", method = POST)
-    @Transactional(readOnly = true)
     public String processLogin(UserLoginRequest userLoginRequest, Model model, HttpSession session) {
         User user = userService.getUser(userLoginRequest.getLogin());
         if (user == null || !user.equalsPassword(userLoginRequest.getPassword())) {
