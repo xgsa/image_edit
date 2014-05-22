@@ -17,7 +17,14 @@
                 <c:when test="${user != null}">
                     Hi, ${user.fullName}<BR>
                     <a href="/user/logout">Logout</a><BR>
-                    <a href="/basket/list">Look into the backet</a>
+                    <c:choose>
+                        <c:when test="${user.role == 'Manager'}">
+                            <a href="/order/list">Look open orders</a>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="/basket/list">Look into the backet</a>
+                        </c:otherwise>
+                    </c:choose>
                 </c:when>
                 <c:otherwise>
                     <a href="/user/login">Log in</a>

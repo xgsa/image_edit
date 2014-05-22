@@ -21,7 +21,7 @@ public class Order {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private User user;
 
     @Column(nullable = false)
@@ -98,6 +98,14 @@ public class Order {
 
     public void setUpcs(Set<Upc> upcs) {
         this.upcs = upcs;
+    }
+
+    public Long getTotalSum() {
+        long totalSum = 0;
+        for (Upc upc : upcs) {
+            totalSum += upc.getPrice();
+        }
+        return totalSum;
     }
 
     @Override

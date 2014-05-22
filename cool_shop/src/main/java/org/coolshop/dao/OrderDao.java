@@ -4,6 +4,8 @@ import org.coolshop.domain.Order;
 import org.coolshop.domain.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public class OrderDao extends BaseDao<Order> {
@@ -24,6 +26,13 @@ public class OrderDao extends BaseDao<Order> {
             getCurrentSession().save(basket);
         }
         return basket;
+    }
+
+    public List<Order> getOrders(Order.Status orderStatus) {
+        return getCurrentSession()
+                .createQuery("from XOrder as xorder where xorder.status = :status order by submittedAt desc")
+                .setParameter("status", orderStatus)
+                .list();
     }
 
 }

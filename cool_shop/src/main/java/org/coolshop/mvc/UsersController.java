@@ -60,7 +60,12 @@ public class UsersController {
             return "user/login";
         } else {
             session.setAttribute("user", user);
-            return "redirect:/";
+            switch (user.getRole()) {
+                case Manager:
+                    return "redirect:/order/list";
+                default:
+                    return "redirect:/";
+            }
         }
     }
 
