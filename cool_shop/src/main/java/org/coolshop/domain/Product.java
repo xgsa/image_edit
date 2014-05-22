@@ -1,6 +1,7 @@
 package org.coolshop.domain;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,10 +16,13 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<AttributeValue> attributes;
 
     private String imageReference;
+
+    @OneToMany(mappedBy = "product", fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Upc> upcs;
 
 
     // For hibernate, not intended to be used by the clients.
@@ -56,6 +60,18 @@ public class Product {
 
     public void setImageReference(String imageReference) {
         this.imageReference = imageReference;
+    }
+
+    void addUpc(Upc upc) {
+        upcs.add(upc);
+    }
+
+    void removeUpc(Upc upc) {
+        upcs.remove(upc);
+    }
+
+    public Set<Upc> getUpcs() {
+        return Collections.unmodifiableSet(upcs);
     }
 
     @Override

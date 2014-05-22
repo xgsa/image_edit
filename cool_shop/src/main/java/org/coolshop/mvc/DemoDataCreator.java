@@ -26,7 +26,7 @@ public class DemoDataCreator {
     List<Upc> upcsToOrder = new ArrayList<>();
 
 
-    @PostConstruct
+    //@PostConstruct
     void initDB() throws Exception {
         LOG.info("Create DB & and fill with demo data...");
 
@@ -36,7 +36,7 @@ public class DemoDataCreator {
 
             createUsers();
             createProducts();
-            //createOrders();
+            createOrders();
 
             session.getTransaction().commit();
         } catch (Exception e) {

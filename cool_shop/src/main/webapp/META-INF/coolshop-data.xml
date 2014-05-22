@@ -27,7 +27,7 @@
                 <prop key="hibernate.id.new_generator_mappings">true</prop>
 
                 <!-- Configure DB schema creation/validation -->
-                <prop key="hibernate.hbm2ddl.auto">create</prop>
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
 
                 <!-- Configure debugging info -->
                 <prop key="hibernate.show_sql">true</prop>
@@ -49,7 +49,7 @@
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-
     <context:component-scan base-package="org.coolshop.dao"/>
+    <context:component-scan base-package="org.coolshop.service"/>
 
 </beans>

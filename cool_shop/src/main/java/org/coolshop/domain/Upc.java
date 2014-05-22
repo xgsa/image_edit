@@ -16,9 +16,10 @@ public class Upc {
     private Long price;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name="product_id")
     private Product product;
 
-    @OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<AttributeValue> attributes;
 
     @ManyToMany
@@ -52,7 +53,9 @@ public class Upc {
     }
 
     public void setProduct(Product product) {
+        this.product.removeUpc(this);
         this.product = product;
+        this.product.addUpc(this);
     }
 
     public Set<AttributeValue> getAttributes() {

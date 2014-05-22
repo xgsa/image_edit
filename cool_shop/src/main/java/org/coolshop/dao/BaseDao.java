@@ -22,7 +22,6 @@ public class BaseDao<T> {
         return sessionFactory.getCurrentSession();
     }
 
-    @Transactional(readOnly = true)
     public T get(Long id) {
         return (T) getCurrentSession().get(entityClass, id);
     }

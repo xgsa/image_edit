@@ -15,7 +15,8 @@
         <div id="loginPanel" class="panel">
             <c:choose>
                 <c:when test="${user != null}">
-                    Logged in as<BR> ${user.fullName}
+                    Logged in as<BR> ${user.fullName}<BR>
+                    <a href="/basket/list">Look into the backet</a>
                 </c:when>
                 <c:otherwise>
                     <a href="/user/login">Log in</a>
