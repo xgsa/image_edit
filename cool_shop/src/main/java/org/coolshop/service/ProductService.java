@@ -48,7 +48,9 @@ public class ProductService {
     public Upc getUpc(Long upcId, boolean fetchAttributes) {
         Upc upc = upcDao.get(upcId);
         if (fetchAttributes) {
-            upc.getAttributes().size();  // Overcome laziness
+            // Overcome laziness
+            upc.getAttributes().size();
+            upc.getProduct().getAttributes().size();
         }
         return upc;
     }
