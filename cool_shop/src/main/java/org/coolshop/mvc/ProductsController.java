@@ -3,8 +3,10 @@ package org.coolshop.mvc;
 import org.coolshop.domain.Order;
 import org.coolshop.domain.Product;
 import org.coolshop.domain.User;
+import org.coolshop.security.CustomUserDetails;
 import org.coolshop.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +22,8 @@ public class ProductsController {
     ProductService productService;
 
 
-    private User getSessionUser(HttpSession session) {
-        return (User) session.getAttribute("user");
+    private User getCurrentUser(Authentication authentication) {
+        return ((CustomUserDetails)authentication.getPrincipal()).getModelUser();
     }
 
     @RequestMapping("/")
@@ -44,37 +46,39 @@ public class ProductsController {
     }
 
     @RequestMapping("/basket/list")
-    public String viewBasket(Model model, HttpSession session) {
-        User user = getSessionUser(session);
+    public String viewBasket(Model model, HttpSession session, Authentication authentication) {
+        User user = getCurrentUser(authentication);
         if (user != null) {
-            model.addAttribute("upcs", productService.getBasket(getSessionUser(session)).getUpcs());
+            model.addAttribute("upcs", productService.getBasket(user).getUpcs());
         }
         return "product/basket";
     }
 
     @RequestMapping("/basket/add")
-    public String addToBasket(Model model, HttpSession session, @RequestParam("id") Long upcId) {
-        User user = getSessionUser(session);
+    public String addToBasket(Model model, HttpSession session, @RequestParam("id") Long upcId,
+                              Authentication authentication) {
+        User user = getCurrentUser(authentication);
         if (user != null) {
-            Order basket = productService.addToBasket(getSessionUser(session), upcId);
+            Order basket = productService.addToBasket(user, upcId);
             model.addAttribute("upcs", basket.getUpcs());
         }
         return "product/basket";
     }
 
     @RequestMapping("/basket/remove")
-    public String removeFromBasket(Model model, HttpSession session, @RequestParam("id") Long upcId) {
-        User user = getSessionUser(session);
+    public String removeFromBasket(Model model, HttpSession session, @RequestParam("id") Long upcId,
+                                   Authentication authentication) {
+        User user = getCurrentUser(authentication);
         if (user != null) {
-            Order basket = productService.removeFromBasket(getSessionUser(session), upcId);
+            Order basket = productService.removeFromBasket(user, upcId);
             model.addAttribute("upcs", basket.getUpcs());
         }
         return "product/basket";
     }
 
     @RequestMapping("/basket/submit")
-    public String submitBasket(Model model, HttpSession session) {
-        User user = getSessionUser(session);
+    public String submitBasket(Model model, HttpSession session, Authentication authentication) {
+        User user = getCurrentUser(authentication);
         if (user != null) {
             productService.submitBasket(user);
         }

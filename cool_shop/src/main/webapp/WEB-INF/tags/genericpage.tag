@@ -1,6 +1,7 @@
 <%@tag description="Generic Page template" pageEncoding="UTF-8" %>
 <%@attribute name="footer" fragment="true" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
     <title>Login page</title>
@@ -13,18 +14,17 @@
         <span id="shopTitle">We do things right</span>
 
         <div id="loginPanel" class="panel">
+            <sec:authorize var="authenticated" access="isAuthenticated()" />
             <c:choose>
-                <c:when test="${user != null}">
-                    Hi, ${user.fullName}<BR>
+                <c:when test="${authenticated}">
+                    Hi, <sec:authentication property="principal.modelUser.fullName"/><BR>
                     <a href="/user/logout">Logout</a><BR>
-                    <c:choose>
-                        <c:when test="${user.role == 'Manager'}">
-                            <a href="/order/list">Look open orders</a>
-                        </c:when>
-                        <c:otherwise>
-                            <a href="/basket/list">Look into the backet</a>
-                        </c:otherwise>
-                    </c:choose>
+                    <sec:authorize access="hasRole('User')">
+                        <a href="/basket/list">Look into the backet</a>
+                    </sec:authorize>
+                    <sec:authorize access="hasRole('Manager')">
+                        <a href="/order/list">Look open orders</a>
+                    </sec:authorize>
                 </c:when>
                 <c:otherwise>
                     <a href="/user/login">Log in</a>

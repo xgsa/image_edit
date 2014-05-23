@@ -15,7 +15,7 @@ public class UserDao extends BaseDao<User> {
         getCurrentSession().save(user);
     }
 
-    public User getUser(String login) {
+    public User get(String login) {
         return (User) getCurrentSession()
                 .createQuery("from XUser as user where user.login = :login")
                 .setString("login", login)

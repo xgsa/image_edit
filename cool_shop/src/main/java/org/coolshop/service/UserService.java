@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     @Autowired
-    UserDao userDao;
+    private UserDao userDao;
 
 
     @Transactional(readOnly = true)
-    public User getUser(String login) {
-        return userDao.getUser(login);
+    public User get(String login) {
+        return userDao.get(login);
     }
 }

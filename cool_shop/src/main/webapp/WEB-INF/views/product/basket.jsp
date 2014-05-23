@@ -2,11 +2,13 @@
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <t:genericpage>
     <jsp:body>
+        <sec:authorize var="authenticated" access="isAuthenticated()" />
         <c:choose>
-            <c:when test="${user != null}">
+            <c:when test="${authenticated}">
                 <h2>There are <c:out value="${fn:length(upcs)} items in your basket"/></h2>
                 <table>
                     <c:forEach var="upc" items="${upcs}">

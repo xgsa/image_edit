@@ -5,6 +5,7 @@ import org.coolshop.domain.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -19,6 +20,8 @@ public class DemoDataCreator {
 
     @Autowired
     SessionFactory sessionFactory;
+
+    Md5PasswordEncoder passwordEncoder = new Md5PasswordEncoder();
 
     Session session;
 
@@ -48,11 +51,16 @@ public class DemoDataCreator {
         }
     }
 
+    // Just for convenient notation
+    private String encode(String password) {
+        return passwordEncoder.encodePassword(password, null);
+    }
+
     private void createUsers() {
-        session.save(new User("root", "111", "Global Administrator", User.Role.Admin));
-        session.save(new User("admin", "111", "Another-One-Administrator", User.Role.Admin));
-        session.save(new User("petr", "111", "Petr I", User.Role.Manager));
-        customerUser = new User("vasia", "111", "Vasiliy Petrovich", User.Role.User);
+        session.save(new User("root", encode("111"), "Global Administrator", User.Role.Admin));
+        session.save(new User("admin", encode("111"), "Another-One-Administrator", User.Role.Admin));
+        session.save(new User("petr", encode("111"), "Petr I", User.Role.Manager));
+        customerUser = new User("vasia", encode("111"), "Vasiliy Petrovich", User.Role.User);
         session.save(customerUser);
     }
 

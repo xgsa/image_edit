@@ -9,6 +9,32 @@
     font-weight: bold;
 }
 
+#loginOuter {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+#loginMiddle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#loginInner {
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    text-align: center;
+}
+.wide {
+    width: 100%;
+}
+span.error {
+    color: red;
+    font-size: 8pt;
+}
+
 #pageHeader {
 }
 #logoImage {
