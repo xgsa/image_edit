@@ -5,12 +5,14 @@
 <html>
 <head>
     <title>Login page</title>
-    <link href="/resources/css/main.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/resources/css/main.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
     <div id="pageHeader">
 
-        <a href="/"><img src="/resources/images/coolshop.png" id="logoImage"/></a>
+        <a href="${pageContext.request.contextPath}/">
+            <img src="${pageContext.request.contextPath}/resources/images/coolshop.png" id="logoImage"/>
+        </a>
         <span id="shopTitle">We do things right</span>
 
         <div id="loginPanel" class="panel">
@@ -18,16 +20,16 @@
             <c:choose>
                 <c:when test="${authenticated}">
                     Hi, <sec:authentication property="principal.modelUser.fullName"/><BR>
-                    <a href="/user/logout">Logout</a><BR>
+                    <a href="${pageContext.request.contextPath}/user/logout">Logout</a><BR>
                     <sec:authorize access="hasRole('User')">
-                        <a href="/basket/list">Look into the backet</a>
+                        <a href="${pageContext.request.contextPath}/basket/list">Look into the backet</a>
                     </sec:authorize>
                     <sec:authorize access="hasRole('Manager')">
-                        <a href="/order/list">Look open orders</a>
+                        <a href="${pageContext.request.contextPath}/order/list">Look open orders</a>
                     </sec:authorize>
                 </c:when>
                 <c:otherwise>
-                    <a href="/user/login">Log in</a>
+                    <a href="${pageContext.request.contextPath}/user/login">Log in</a>
                 </c:otherwise>
             </c:choose>
         </div>

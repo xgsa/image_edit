@@ -19,18 +19,18 @@ public class DemoDataCreator {
     private static final Logger LOG = Logger.getLogger(DemoDataCreator.class);
 
     @Autowired
-    SessionFactory sessionFactory;
+    private SessionFactory sessionFactory;
 
-    Md5PasswordEncoder passwordEncoder = new Md5PasswordEncoder();
+    private Md5PasswordEncoder passwordEncoder = new Md5PasswordEncoder();
 
-    Session session;
+    private Session session;
 
-    User customerUser;
-    List<Upc> upcsToOrder = new ArrayList<>();
+    private User customerUser;
+    private List<Upc> upcsToOrder = new ArrayList<>();
 
 
     //@PostConstruct
-    void initDB() throws Exception {
+    void initDB() {
         LOG.info("Create DB & and fill with demo data...");
 
         session = sessionFactory.openSession();
@@ -68,7 +68,6 @@ public class DemoDataCreator {
         Attribute
             mark = new Attribute("mark"),
             color = new Attribute("color"),
-            size = new Attribute("size"),
             buttons = new Attribute("buttons"),
             wheel = new Attribute("wheel");
 

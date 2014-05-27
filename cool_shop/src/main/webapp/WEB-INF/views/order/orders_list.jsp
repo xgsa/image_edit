@@ -13,14 +13,14 @@
                 <th class="orderTableItem">Customer</th>
                 <th class="orderTableItem">Created</th>
                 <th class="orderTableItem">Submitted</th>
-                <th class="orderTableItem">Order sum </td>
+                <th class="orderTableItem">Order sum</th>
             </tr>
             <c:forEach var="order" items="${orders}">
                 <tr>
                     <td class="orderTableItem">
-                        <a href="/order/done?id=${order.id}">
-                            <img src="/resources/images/order_done.png" alt="[mark order as done]"
-                                 title="Mark as done"/>
+                        <a href="${pageContext.request.contextPath}/order/done?id=${order.id}">
+                            <img src="${pageContext.request.contextPath}/resources/images/order_done.png"
+                                 alt="[mark order as done]" title="Mark as done"/>
                         </a>
                     </td>
                     <td class="orderTableItem">

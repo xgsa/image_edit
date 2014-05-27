@@ -4,14 +4,14 @@
 <html>
 <head>
     <title>Login page</title>
-    <link href="/resources/css/main.css" rel="stylesheet" type="text/css"/>
+    <link href="${pageContext.request.contextPath}/resources/css/main.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 
 <div id="loginOuter">
     <div id="loginMiddle">
         <div id="loginInner" class="panel">
-            <form action="/user/process_login" method="POST">
+            <form action="${pageContext.request.contextPath}/user/process_login" method="POST">
                 <div class="panelTitle">Sign in</div>
                 <table class="wide">
                     <c:if test="${param.error != null}">

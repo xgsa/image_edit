@@ -7,7 +7,7 @@
     <jsp:body>
         <c:forEach var="product" items="${products}">
             <div id="productPanel" class="panel">
-                <a href="/product?id=${product.id}">
+                <a href="${pageContext.request.contextPath}/product?id=${product.id}">
                     <div class="panelTitle"><c:out value="${product.name}"/></div>
                     <HR>
                     <spring:url value="{imageServer}/{imageResource}" var="imageUrl">

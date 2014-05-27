@@ -13,7 +13,7 @@ import java.util.Collection;
 // Use a separate adapter to avoid dependency of User on Spring Security.
 public class CustomUserDetails implements UserDetails {
 
-    private User user;
+    private final User user;
     private Collection<SimpleGrantedAuthority> authorities;
 
 
@@ -28,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (authorities == null) {
-            authorities = new ArrayList();
+            authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
         }
         return authorities;

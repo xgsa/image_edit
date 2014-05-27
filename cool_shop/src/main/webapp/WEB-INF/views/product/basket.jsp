@@ -14,13 +14,15 @@
                     <c:forEach var="upc" items="${upcs}">
                         <tr>
                             <td>
-                                <a href="/basket/remove?id=${upc.id}">
-                                    <img src="/resources/images/remove_from_basket.png" alt="[remove from basket]"
-                                         title="Remove from Basket"/>
+                                <a href="${pageContext.request.contextPath}/basket/remove?id=${upc.id}">
+                                    <img src="${pageContext.request.contextPath}/resources/images/remove_from_basket.png"
+                                         alt="[remove from basket]" title="Remove from Basket"/>
                                 </a>
                             </td>
                             <td>
-                                <a href="/upc?id=${upc.id}"><c:out value="${upc.product.name}"/></a>
+                                <a href="${pageContext.request.contextPath}/upc?id=${upc.id}">
+                                    <c:out value="${upc.product.name}"/>
+                                </a>
                             </td>
                             <td>
                                 <c:out value="${upc.price}"/>
@@ -29,15 +31,16 @@
                     </c:forEach>
                     <tr>
                         <td colspan="3">
-                            <a href="/basket/submit">
-                                <img src="/resources/images/purchase.png" alt="[Purchase NOW!]"
-                                     title="Purchase NOW!"/>Purchase NOW!</a>
+                            <a href="${pageContext.request.contextPath}/basket/submit">
+                                <img src="${pageContext.request.contextPath}/resources/images/purchase.png"
+                                     alt="[Purchase NOW!]" title="Purchase NOW!"/>Purchase NOW!</a>
                         </td>
                     </tr>
                 </table>
             </c:when>
             <c:otherwise>
-                You need to <a href="/user/login">log in</a> to be able to perform actions with basket
+                You need to <a href="${pageContext.request.contextPath}/user/login">log in</a>
+                to be able to perform actions with basket
             </c:otherwise>
         </c:choose>
     </jsp:body>

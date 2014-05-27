@@ -25,7 +25,7 @@
                         <spring:param name="imageServer" value="${globalProperties.imageServerUrl}" />
                         <spring:param name="imageResource" value="${product.imageReference}" />
                     </spring:url>
-                    <image src="${imageUrl}" id="productInfoImage"/>
+                    <img src="${imageUrl}" id="productInfoImage"/>
                 </td>
                 <td width="10px"></td>
                 <td>
@@ -41,8 +41,9 @@
                     <c:if test="${upc != null}" >
                         <div class="panel">Price: <c:out value="${upc.price}"/></div>
                         <div style="float: right;">
-                            <a href="/basket/add?id=${upc.id}">
-                                <img src="/resources/images/add_to_basket.png" alt="[add to basket]" title="Add to Basket"/>
+                            <a href="${pageContext.request.contextPath}/basket/add?id=${upc.id}">
+                                <img src="${pageContext.request.contextPath}/resources/images/add_to_basket.png"
+                                     alt="[add to basket]" title="Add to Basket"/>
                             </a>
                         </div>
                     </c:if>
@@ -63,9 +64,9 @@
                             <HR>
                             Price: <c:out value="${upc.price}"/>
                             <div style="float: right;">
-                                <a href="/basket/add?id=${upc.id}">
-                                    <img src="/resources/images/add_to_basket.png" alt="[add to basket]"
-                                         title="Add to Basket"/>
+                                <a href="${pageContext.request.contextPath}/basket/add?id=${upc.id}">
+                                    <img src="${pageContext.request.contextPath}/resources/images/add_to_basket.png"
+                                         alt="[add to basket]" title="Add to Basket"/>
                                 </a>
                             </div>
                         </div>
