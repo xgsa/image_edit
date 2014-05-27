@@ -17,6 +17,7 @@
         <logout logout-url="/user/logout"/>
 
         <intercept-url pattern="/order/**" access="hasRole('Manager')" />
+        <intercept-url pattern="/basket/**" access="!isAnonymous()" />
     </http>
 
     <context:component-scan base-package="org.coolshop.security"/>
