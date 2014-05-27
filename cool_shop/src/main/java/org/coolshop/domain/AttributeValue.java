@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 
 @Entity
-public class AttributeValue {
+public class AttributeValue implements BaseEntity {
 
     @Id
     @GeneratedValue

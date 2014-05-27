@@ -10,15 +10,9 @@ import java.util.List;
 @Repository
 public class ProductDao extends BaseDao<Product> {
 
-    public ProductDao() {
-        super(Product.class);
-    }
-
-    public List<Product> getProducts(int count) {
-        return getCurrentSession()
-                .createQuery("from Product")
-                .setMaxResults(count)
-                .list();
+    @Override
+    protected Class<Product> getEntityClass() {
+        return Product.class;
     }
 
     public List<Upc> getProductUpcs(Long product_id) {

@@ -5,7 +5,7 @@ import javax.persistence.*;
 
 // NOTE: "user" is a keyword in some of DB engines.
 @Entity(name = "XUser")
-public class User {
+public class User implements BaseEntity {
 
     public enum Role {
         Customer,

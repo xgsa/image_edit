@@ -10,8 +10,9 @@ import java.util.List;
 @Repository
 public class OrderDao extends BaseDao<Order> {
 
-    public OrderDao() {
-        super(Order.class);
+    @Override
+    protected Class<Order> getEntityClass() {
+        return Order.class;
     }
 
     public Order getUserBasket(User user) {

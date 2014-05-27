@@ -7,7 +7,7 @@ import java.util.Set;
 
 
 @Entity
-public class Product {
+public class Product implements BaseEntity {
 
     @Id
     @GeneratedValue

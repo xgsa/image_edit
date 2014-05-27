@@ -8,7 +8,7 @@ import java.util.Set;
 
 // NOTE: "order" is a keyword in some of DB engines.
 @Entity(name = "XOrder")
-public class Order {
+public class Order implements BaseEntity {
 
     public enum Status {
         New,

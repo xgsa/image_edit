@@ -29,7 +29,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public List<Product> getProducts(int count) {
-        return productDao.getProducts(count);
+        return productDao.getAll(count);
     }
 
     @Transactional(readOnly = true)

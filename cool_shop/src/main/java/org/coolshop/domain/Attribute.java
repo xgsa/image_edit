@@ -7,7 +7,7 @@ import javax.persistence.Id;
 
 
 @Entity
-public class Attribute {
+public class Attribute implements BaseEntity {
 
     @Id
     @GeneratedValue

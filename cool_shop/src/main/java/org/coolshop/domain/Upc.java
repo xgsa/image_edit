@@ -6,7 +6,7 @@ import java.util.Set;
 
 
 @Entity
-public class Upc {
+public class Upc implements BaseEntity {
 
     @Id
     @GeneratedValue
